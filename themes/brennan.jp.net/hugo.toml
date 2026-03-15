@@ -1,0 +1,93 @@
+baseURL = "https://brennan.jp.net/"
+languageCode = "en-us"
+title = "brennan.jp.net"
+[pagination]
+  pagerSize = 15
+summaryLength = 70
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+
+
+[params]
+  description = "Your site description here!"
+  author = "Your Name"
+  featured_image = "/images/screenshot.jpg"
+  
+  # SEO protection for example content (set to false for your own work)
+  noIndex = true
+  robots = "noindex, nofollow"
+  
+  # Contact information
+  email = "your-email@example.com"
+  mastodon = "@username@mastodon.social"
+  bluesky = "username.bsky.social"
+  github = "username"
+  
+  # Development info
+  developer = "🍓 Berry House"
+  developerUrl = "https://berryhouse.ca"
+  themeRepo = "https://github.com/brennanbrown/brennan.jp.net"
+  licenseUrl = "https://github.com/brennanbrown/brennan.jp.net/blob/main/LICENSE"
+  themeName = "brennan.jp.net"
+  editor = "Visual Studio Code"
+  vcs = "Git"
+  
+  # IndieWeb endpoints
+  webmention = "https://webmention.io/yourdomain.com/webmention"
+  pingback = "https://webmention.io/yourdomain.com/xmlrpc"
+
+  # Color scheme
+  primaryColor = "#FF0000"
+  secondaryColor = "#0066FF"
+  backgroundColor = "#FFFFFF"
+  borderColor = "#CCCCCC"
+  textSecondaryColor = "#666666"
+  textMutedColor = "#999999"
+  backgroundSecondaryColor = "#F0F0F0"
+
+  # Layout options
+  showSidebar = true
+  sidebarPosition = "right"
+  columnCount = 3
+
+  # Homepage settings
+  postsPerPage = 15
+  excerptLength = 300
+  showThumbnails = true
+
+  # Visual effects
+  enableAnimations = true
+  showHitCounter = true
+  enableMarquee = true
+
+  # Widgets
+  showRecentPosts = true
+  recentPostsCount = 10
+  showTagCloud = true
+  showArchiveCalendar = true
+  showRandomQuote = true
+
+  # Footer
+  showSiteMap = true
+  showCopyright = true
+  customFooterText = ""
+
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "dracula"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[outputFormats]
+  [outputFormats.RSS]
+    mediatype = "application/rss+xml"
+    baseName = "feed"

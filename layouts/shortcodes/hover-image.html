@@ -1,0 +1,34 @@
+<span class="hover-image-trigger" onmouseenter="(function(el){var img=el.querySelector('.hover-image-popup');var rect=el.getBoundingClientRect();var spaceAbove=rect.top;var spaceBelow=window.innerHeight-rect.bottom;if(spaceBelow>spaceAbove){img.classList.add('hover-below');img.classList.remove('hover-above')}else{img.classList.add('hover-above');img.classList.remove('hover-below')}if(window.innerWidth<=600){if(spaceBelow>spaceAbove){img.style.top=rect.bottom+'px'}else{img.style.top=(rect.top-img.offsetHeight)+'px'}}})(this)">{{ .Inner }}<img src="{{ .Get "src" }}" class="hover-image-popup" alt="{{ .Get "alt" | default "" }}" {{ with .Get "width" }}style="width: {{ . }}px;"{{ end }} /></span>
+<script>
+if(!window._hoverScrollInit){window._hoverScrollInit=true;
+  var _activePopup=null;
+  function _showPopup(trigger){
+    var img=trigger.querySelector('.hover-image-popup');
+    if(!img)return;
+    var rect=trigger.getBoundingClientRect();
+    var spaceAbove=rect.top;
+    var spaceBelow=window.innerHeight-rect.bottom;
+    if(spaceBelow>spaceAbove){img.classList.add('hover-below');img.classList.remove('hover-above');img.style.top=rect.bottom+'px'}
+    else{img.classList.add('hover-above');img.classList.remove('hover-below');img.style.top=(rect.top-img.offsetHeight)+'px'}
+    trigger.classList.add('hover-active');
+    _activePopup=trigger;
+  }
+  function _hideAllPopups(){
+    document.querySelectorAll('.hover-image-trigger.hover-active').forEach(function(t){t.classList.remove('hover-active')});
+    _activePopup=null;
+  }
+  if(window.innerWidth<=600||'ontouchstart' in window){
+    document.addEventListener('click',function(e){
+      var trigger=e.target.closest('.hover-image-trigger');
+      if(trigger){
+        e.preventDefault();
+        if(_activePopup===trigger){_hideAllPopups()}
+        else{_hideAllPopups();_showPopup(trigger)}
+      }else{_hideAllPopups()}
+    });
+    window.addEventListener('scroll',function(){
+      if(_activePopup){_hideAllPopups()}
+    },{passive:true});
+  }
+}
+</script>

@@ -1,0 +1,72 @@
+<aside class="sidebar sidebar-{{ .Site.Params.sidebarPosition | default "right" }}" role="complementary" aria-label="Sidebar">
+
+  {{ if .Site.Params.showRecentPosts }}
+  {{ partial "widgets/recent-posts.html" . }}
+  {{ end }}
+
+  {{ if .Site.Params.showTagCloud }}
+  {{ partial "widgets/tag-cloud.html" . }}
+  {{ end }}
+
+  {{ if .Site.Params.showArchiveCalendar }}
+  {{ partial "widgets/archive.html" . }}
+  {{ end }}
+
+  <!-- Site Statistics Widget -->
+  <div class="widget widget-stats">
+    <div class="widget-header widget-header-stats">📊 Site Stats</div>
+    <div class="widget-content">
+      <ul class="stats-list">
+        <li><strong>Posts:</strong> {{ len (where .Site.RegularPages "Section" "posts") }}</li>
+        <li><strong>Categories:</strong> {{ len .Site.Taxonomies.categories }}</li>
+        <li><strong>Tags:</strong> {{ len .Site.Taxonomies.tags }}</li>
+      </ul>
+    </div>
+  </div>
+
+  {{ if .Site.Params.showRandomQuote }}
+  <!-- Random Quote Widget -->
+  <div class="widget widget-quote">
+    <div class="widget-header widget-header-quote">It's time for jokes! <button id="shuffle-quote" class="shuffle-btn" title="Next joke">Next</button></div>
+    <div class="widget-content">
+      {{ $quotes := .Site.Params.quotes }}
+      {{ if $quotes }}
+      <div class="quote-rotation" data-quotes='{{ $quotes | jsonify }}'>
+        <blockquote class="random-quote">
+          <p id="quote-text">{{ (index $quotes 0).text | safeHTML }}</p>
+          <cite id="quote-author">— {{ (index $quotes 0).author }}</cite>
+        </blockquote>
+      </div>
+      <script>
+        (function() {
+          var el = document.querySelector('.quote-rotation');
+          var quotes = JSON.parse(el.getAttribute('data-quotes'));
+          var textEl = document.getElementById('quote-text');
+          var authorEl = document.getElementById('quote-author');
+          var btn = document.getElementById('shuffle-quote');
+          var currentIdx = 0;
+          function shuffle() {
+            currentIdx = (currentIdx + 1) % quotes.length;
+            textEl.innerHTML = quotes[currentIdx].text;
+            authorEl.textContent = '— ' + quotes[currentIdx].author;
+          }
+          shuffle();
+          btn.addEventListener('click', shuffle);
+        })();
+      </script>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  <!-- Currently Reading Widget -->
+  <div class="widget widget-reading">
+    <div class="widget-header widget-header-reading">📖 Currently Reading</div>
+    <div class="widget-content">
+      <p class="reading-item"><em>Check back soon!</em></p>
+    </div>
+  </div>
+
+
+
+</aside>

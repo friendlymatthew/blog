@@ -1,0 +1,3 @@
+[submodule "themes/vintage-web-hugo-theme"]
+	path = themes/vintage-web-hugo-theme
+	url = https://github.com/meimakes/vintage-web-hugo-theme.git

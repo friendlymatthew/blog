@@ -1,0 +1,77 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+
+    {{ if .Site.Params.showSiteMap }}
+    <div class="footer-col footer-sitemap">
+      <h3 class="footer-heading">Site Map</h3>
+      <ul>
+        {{ range .Site.Menus.main }}
+        <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+        {{ end }}
+        <!-- <li><a href="{{ "categories/" | relURL }}">Categories</a></li> -->
+        <li><a href="{{ "tags/" | relURL }}">Tags</a></li>
+      </ul>
+    </div>
+    {{ end }}
+
+    <div class="footer-col footer-links">
+      <h3 class="footer-heading">Links</h3>
+      <ul>
+        <li><a href="{{ "feed.xml" | absURL }}">📡 RSS Feed</a></li>
+        {{- if .Site.Params.github }}
+        <li><a href="https://github.com/{{ .Site.Params.github }}" rel="me">GitHub</a></li>
+        {{- end }}
+      </ul>
+    </div>
+
+    <div class="h-card p-author" style="display: none;">
+      <img class="u-photo" src="{{ "images/avatar.jpg" | relURL }}" alt="{{ .Site.Params.author }}" />
+      <span class="p-name">{{ .Site.Params.author }}</span>
+      <a class="u-url" href="{{ .Site.BaseURL }}">{{ .Site.BaseURL }}</a>
+      <span class="p-note">{{ .Site.Params.description }}</span>
+    </div>
+
+    <div class="footer-col footer-info">
+      <h3 class="footer-heading">Info</h3>
+      {{ if .Site.Params.showHitCounter }}
+      <div class="hit-counter">
+        <span class="counter-label">Visitors:</span>
+        <span class="counter-digits" id="visitor-counter">
+          <span class="digit">0</span><span class="digit">0</span><span class="digit">0</span><span class="digit">0</span><span class="digit">0</span><span class="digit">0</span>
+        </span>
+      </div>
+      <script data-goatcounter="https://friendlymatthew.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+      <script>
+      (function() {
+        var el = document.getElementById('visitor-counter');
+        var r = new XMLHttpRequest();
+        r.open('GET', 'https://friendlymatthew.goatcounter.com/counter/' + encodeURIComponent(location.pathname) + '.json');
+        r.onload = function() {
+          if (r.status === 200) {
+            var count = JSON.parse(r.responseText).count.replace(/\s/g, '');
+            var padded = ('000000' + count).slice(-6);
+            var digits = '';
+            for (var i = 0; i < padded.length; i++) {
+              digits += '<span class="digit">' + padded[i] + '</span>';
+            }
+            el.innerHTML = digits;
+          }
+        };
+        r.send();
+      })();
+      </script>
+      {{ end }}
+      <p class="page-load-time">Page generated: {{ now.Format "2006-01-02 15:04:05" }}</p>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    {{ if .Site.Params.showCopyright }}
+    <p>&copy; {{ now.Format "2006" }} {{ .Site.Params.author }}</p>
+    {{ end }}
+    {{ with .Site.Params.customFooterText }}
+    <p class="browser-notice">{{ . }}</p>
+    {{ end }}
+  </div>
+</footer>

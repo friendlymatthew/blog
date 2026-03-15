@@ -1,0 +1,15 @@
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <div class="site-branding">
+      <h1 class="site-title">
+        <a href="{{ "/" | relURL }}">{{ .Site.Title }}</a>
+      </h1>
+      <p class="site-tagline"><a href="{{ .Site.Params.description }}" target="_blank" rel="noopener">{{ .Site.Params.description }}</a></p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ "feed.xml" | absURL }}" class="rss-button" aria-label="RSS Feed" title="RSS Feed">
+        <span class="rss-icon">📡</span> RSS
+      </a>
+    </div>
+  </div>
+</header>

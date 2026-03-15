@@ -1,0 +1,146 @@
+baseURL = "https://chunkofcoal.com"
+languageCode = "en-us"
+title = "chunkofcoal.com"
+theme = "brennan.jp.net"
+
+[pagination]
+pagerSize = 15
+summaryLength = 70
+
+[taxonomies]
+category = "categories"
+tag = "tags"
+
+[menus]
+[[menus.main]]
+name = "Home"
+url = "/"
+weight = 1
+[[menus.main]]
+name = "Posts"
+url = "/posts/"
+weight = 2
+[[menus.main]]
+name = "About"
+url = "/about/"
+weight = 3
+
+[params]
+description = "https://github.com/friendlymatthew"
+author = "friendlymatthew"
+featured_image = "/images/me.jpg"
+
+# SEO
+noIndex = false
+robots = "index, follow"
+github = "friendlymatthew"
+
+# Color scheme
+primaryColor = "#FF0000"
+secondaryColor = "#0066FF"
+backgroundColor = "#FFFFFF"
+borderColor = "#CCCCCC"
+textSecondaryColor = "#666666"
+textMutedColor = "#999999"
+backgroundSecondaryColor = "#F0F0F0"
+
+# Layout options
+showSidebar = true
+sidebarPosition = "right"
+columnCount = 3
+
+# Homepage settings
+postsPerPage = 15
+excerptLength = 300
+showThumbnails = true
+
+# Visual effects
+enableAnimations = true
+showHitCounter = true
+enableMarquee = false
+
+# Widgets
+showRecentPosts = true
+recentPostsCount = 10
+showTagCloud = true
+showArchiveCalendar = true
+showRandomQuote = true
+
+# Footer
+[[params.quotes]]
+text = "I wouldn't call myself a fan of 'steampunk', but I will say it's the healthiest way to prepare punk."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Every day I try to expand my vocabulary by using new words to give my arguments more verisimilitude. Today's word is 'expand'."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "I was once trapped on a desert island and to be honest, the five albums I brought didn't help a goddamn thing."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "I don't want fancy things. Or fancy-shmancy things. I don't even want fancy-shmancy-wancy things or fancy-shmancy-take-a-trip-to-Francey things!<br><br>What I want is wasting your time and mine."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Wearing glasses doesn't always make you look smarter. For example, you must wear them on your face."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "No one ever said life is fair... except for that Russian guy who worked at the fair. (in a Russian accent) \"Life is Fair.\""
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "I wonder who's buried in the grave of the guy who invented the Ol' Switcheroo."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Chess players think Checkers players are dumb, but I love playing Checkers. Plus the red ones are tasty."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "I used to think revenge was a dish best served cold, but then I realized it meant 'getting back at somebody'."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Music is the universal language, but one day soon it will be replaced by Chinese."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Mickey Mantle knew two things, drinking, and playing drunk baseball."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "I think there's nothing cooler than being a lone wolf. Except at wolf-picnics when you don't have a partner for the wolf-wheelbarrow races."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "A Florida man was arrested for stealing a truck filled with $76,000 worth of Campbell's soup. I, for one, hope this guy goes away for 'Mmm, mmm, good!'"
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "Accomplished comedian Sinbad announced he's filing for bankruptcy for the 2nd time. Sounds like things have gone from Sinbad to Sinworse."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "A tractor-trailer flipped over releasing millions of bees, which stung the driver hundreds of times. Speaking from the hospital, the driver said: \"No flowers?\""
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "When Mozart would sit down to compose a new piano concerto, he would first pause, close his eyes, and say to himself, \"I'd better make this hard as fuck to play.\""
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "If I could add one president to Mt. Rushmore it would be James Polk, because I'm interested to know what he looked like."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "My palm reader told me that I have nice hands, maybe the nicest hands she's ever seen. Also on Friday I'm going to get hit by a train."
+author = "Norm Macdonald Live"
+[[params.quotes]]
+text = "If I was grading constellations, my review and description for Orion's Belt would be just three stars."
+author = "Norm Macdonald Live"
+
+showSiteMap = true
+showCopyright = true
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.highlight]
+style = "dracula"
+noClasses = false
+
+[outputs]
+home = ["HTML", "RSS"]
+section = ["HTML", "RSS"]
+
+[outputFormats]
+[outputFormats.RSS]
+mediatype = "application/rss+xml"
+baseName = "feed"

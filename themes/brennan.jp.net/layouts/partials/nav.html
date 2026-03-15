@@ -1,0 +1,26 @@
+<nav class="main-nav" role="navigation" aria-label="Main navigation">
+  <ul class="nav-list">
+    {{ range .Site.Menus.main }}
+    <li class="nav-item">
+      <a href="{{ .URL }}" class="nav-link"
+         {{ if eq $.RelPermalink .URL }}aria-current="page"{{ end }}>
+        {{ .Name }}
+      </a>
+    </li>
+    {{ end }}
+  </ul>
+</nav>
+
+{{ if and (not .IsHome) (eq .Section "posts") }}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="{{ "/" | relURL }}">Home</a></li>
+    {{ if .IsPage }}
+    <li><a href="{{ "posts/" | relURL }}">Posts</a></li>
+    <li aria-current="page"><span>{{ .Title }}</span></li>
+    {{ else }}
+    <li aria-current="page">Posts</li>
+    {{ end }}
+  </ol>
+</nav>
+{{ end }}

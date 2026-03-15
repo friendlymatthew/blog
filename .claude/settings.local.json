@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which hugo:*)",
+      "Bash(hugo new:*)",
+      "Bash(git init:*)",
+      "WebFetch(domain:themes.gohugo.io)",
+      "Bash(git submodule:*)",
+      "Bash(hugo server:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone:*)",
+      "Bash(sleep:*)",
+      "Bash(sips:*)",
+      "Bash(pip3 install:*)",
+      "Bash(hugo version:*)",
+      "WebFetch(domain:xyproto.github.io)",
+      "Bash(curl:*)",
+      "Bash(hugo:*)",
+      "Bash(ls:*)",
+      "Bash(dig:*)",
+      "Bash(git:*)",
+      "Bash(npx playwright:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(rm:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright"
+  ]
+}
