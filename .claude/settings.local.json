@@ -23,7 +23,9 @@
       "Bash(npx playwright:*)",
       "Bash(node:*)",
       "Bash(npm install:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:friendlymatthew.goatcounter.com)"
     ]
   },
   "enableAllProjectMcpServers": true,
