@@ -14,7 +14,7 @@ Here's a demo running Conway's Game of Life. You snapshot the simulation mid-tic
 <img src="/images/demo.gif" alt="Conway's Game of Life demo" />
 </div>
 
-I found snapshotting an interesting feature to implement because it ties itself so well to a [time travel debugger](https://en.wikipedia.org/wiki/Time_travel_debugging). Say you're stepping through a program trying to track down a bug. With a normal debugger, if you step one instruction too far, you have to restart the whole session and carefully step back to where you were. {{< hover-image src="/images/memento-cat.gif" alt="memento cat" width="350" >}}A time travel debugger lets you just step backwards{{< /hover-image >}}, or jump to any point in the program's execution history.
+I found snapshotting an interesting feature to implement because it ties itself so well to a [time travel debugger](https://en.wikipedia.org/wiki/Time_travel_debugging). Say you're stepping through a program trying to track down a bug. With a normal debugger, if you step one instruction too far, you have to restart the whole session and carefully step back to where you were. {{< hover-image src="/images/memento-cat.gif" alt="memento cat" width="350" caption="for the longest time I thought the movie was spelled momento" >}}A time travel debugger lets you just step backwards{{< /hover-image >}}, or jump to any point in the program's execution history.
 
 # The problem space
 
@@ -107,7 +107,7 @@ In practice, we pick a buffer size and half life up front. Every instruction, we
 
 You could deterministically evict snapshots like evicting the $N$th oldest snapshot, but you'll run into a problem that Barbour describes as _temporal aliasing_. If eviction is deterministic, it can synchronize with periodic behavior in the program. If you're stuck in a tight loop, you'd evict snapshots at the same phase of the loop every time, creating blind spots in your history. By making eviction probabilistic, we break any synchronization. Older snapshots are still far more likely to be evicted, but which specific one gets dropped varies each time.
 
-Barbour explains that the half life, eviction strategy, and buffer size are all tunable per application. He also concludes the blog post by dropping an implementation of the exponential buffer {{< hover-image src="/images/dorian.png" alt="Dorian" width="350" >}} in Haskell.{{< /hover-image >}}
+Barbour explains that the half life, eviction strategy, and buffer size are all tunable per application. He also concludes the blog post by dropping an implementation of the exponential buffer {{< hover-image src="/images/dorian.png" alt="Dorian" width="350" caption="smallest haskell dev" >}} in Haskell.{{< /hover-image >}}
 
 # The implementation
 

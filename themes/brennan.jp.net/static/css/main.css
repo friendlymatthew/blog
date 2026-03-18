@@ -52,6 +52,7 @@
   max-width: none;
   display: inline-block;
   border: 2px solid var(--border-color);
+  background: var(--background-color);
   box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
   z-index: 100;
   opacity: 0;
@@ -63,6 +64,17 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+.hover-image-caption {
+  display: block;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-style: italic;
+  color: #000;
+  background: var(--background-secondary);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
 }
 
 .hover-image-trigger:hover .hover-image-popup,
@@ -1384,6 +1396,35 @@ figcaption {
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
   line-height: 1.4;
+}
+
+/* Hover caption figures */
+figure.hover-caption {
+  position: relative;
+  display: inline-block;
+}
+
+figure.hover-caption figcaption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-style: italic;
+  font-size: 14px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-top: none;
+  border-bottom: none;
+}
+
+figure.hover-caption:hover figcaption,
+figure.hover-caption:focus-within figcaption {
+  opacity: 1;
 }
 
 /* Responsive figure sizing */
