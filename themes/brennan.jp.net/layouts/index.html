@@ -10,7 +10,7 @@
     {{ range $index, $page := $paginator.Pages }}
     <article class="post-card {{ if lt (sub now.Unix .Date.Unix) 259200 }}post-hot{{ end }}">
       <div class="post-card-inner">
-        {{ if .Params.featured_image }}
+        {{ if and .Params.featured_image (not .Params.hide_featured_image) }}
         <div class="post-thumbnail">
           <img src="{{ .Params.featured_image }}" alt="{{ .Params.featured_image_alt }}">
         </div>

@@ -1,0 +1,203 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - heading "chunkofcoal.com" [level=1] [ref=e6]:
+          - link "chunkofcoal.com" [ref=e7] [cursor=pointer]:
+            - /url: /
+        - paragraph [ref=e8]:
+          - link "https://github.com/friendlymatthew" [ref=e9] [cursor=pointer]:
+            - /url: https://github.com/friendlymatthew
+      - link "RSS Feed" [ref=e11] [cursor=pointer]:
+        - /url: http://localhost:1315/feed.xml
+        - text: 📡 RSS
+  - navigation "Main navigation" [ref=e12]:
+    - list [ref=e13]:
+      - listitem [ref=e14]:
+        - link "Home" [ref=e15] [cursor=pointer]:
+          - /url: /
+      - listitem [ref=e16]:
+        - link "Posts" [ref=e17] [cursor=pointer]:
+          - /url: /posts/
+      - listitem [ref=e18]:
+        - link "About" [ref=e19] [cursor=pointer]:
+          - /url: /about/
+  - generic [ref=e20]:
+    - main [ref=e21]:
+      - generic [ref=e22]:
+        - heading "■ Blog Posts (2)" [level=2] [ref=e24]
+        - generic [ref=e25]:
+          - article [ref=e26]:
+            - generic [ref=e28]:
+              - heading "Let's see Paul Allen's SIMD CSV parser" [level=3] [ref=e29]:
+                - link "Let's see Paul Allen's SIMD CSV parser" [ref=e30] [cursor=pointer]:
+                  - /url: http://localhost:1315/posts/simd-csv/
+              - generic [ref=e31]:
+                - generic [ref=e32]:
+                  - text: 📅
+                  - time [ref=e33]: 2026-03-18
+                - generic [ref=e34]:
+                  - text: 📁
+                  - link "programming" [ref=e35] [cursor=pointer]:
+                    - /url: /categories/programming/
+              - generic [ref=e36]:
+                - generic [ref=e38]:
+                  - img "Paul Allen's card" [ref=e39]
+                  - paragraph [ref=e40]:
+                    - emphasis [ref=e41]:
+                      - text: Look at the subtle nibble extraction. The tasteful lookup tables of it. Oh my god, it even has
+                      - code [ref=e42]: vqtbl1q_u8
+                      - text: and
+                      - code [ref=e43]: vmull_p64
+                      - text: .
+                - paragraph [ref=e44]:
+                  - link "A year ago I wrote a CSV parser that is able to parse 64 characters at a time." [ref=e45] [cursor=pointer]:
+                    - /url: https://github.com/friendlymatthew/simdcsv
+                  - text: It’s purely for research and hand waves over crucial steps for a production parser like validation. But the core algorithm uses SIMD and bitwise operations to classify and filter structual characters in bulk, and these are the techniques I’ll be talking about today.
+              - generic [ref=e46]:
+                - link "Continue reading »" [ref=e47] [cursor=pointer]:
+                  - /url: http://localhost:1315/posts/simd-csv/
+                - generic [ref=e48]:
+                  - link "rust" [ref=e49] [cursor=pointer]:
+                    - /url: /tags/rust/
+                  - link "simd" [ref=e50] [cursor=pointer]:
+                    - /url: /tags/simd/
+                  - link "csv" [ref=e51] [cursor=pointer]:
+                    - /url: /tags/csv/
+                  - link "file formats" [ref=e52] [cursor=pointer]:
+                    - /url: /tags/file-formats/
+          - article [ref=e53]:
+            - generic [ref=e55]:
+              - heading "My memory isn't getting worse, it's just using exponential decay" [level=3] [ref=e56]:
+                - link "My memory isn't getting worse, it's just using exponential decay" [ref=e57] [cursor=pointer]:
+                  - /url: http://localhost:1315/posts/exponential-decay/
+              - generic [ref=e58]:
+                - generic [ref=e59]:
+                  - text: 📅
+                  - time [ref=e60]: 2026-03-15
+                - generic [ref=e61]:
+                  - text: 📁
+                  - link "programming" [ref=e62] [cursor=pointer]:
+                    - /url: /categories/programming/
+              - generic [ref=e63]:
+                - paragraph [ref=e64]:
+                  - link "I’ve been working on a WASM interpreter from scratch." [ref=e65] [cursor=pointer]:
+                    - /url: https://github.com/friendlymatthew/gabagool
+                  - text: The unique feature is that it’s completely snapshotable, down to the instruction level. At any point during execution, you can call
+                  - code [ref=e66]: snapshot()
+                  - text: and it will write out the entire execution state into a list of bytes, capturing everything up to that exact instruction. You can restore it later and execution picks up right where it left off.
+                - paragraph [ref=e67]: "Here’s a demo running Conway’s Game of Life. You snapshot the simulation mid-tick, fork it into a new process, and watch both diverge from the same state:"
+              - generic [ref=e68]:
+                - link "Continue reading »" [ref=e69] [cursor=pointer]:
+                  - /url: http://localhost:1315/posts/exponential-decay/
+                - generic [ref=e70]:
+                  - link "rust" [ref=e71] [cursor=pointer]:
+                    - /url: /tags/rust/
+                  - link "data structures" [ref=e72] [cursor=pointer]:
+                    - /url: /tags/data-structures/
+                  - link "debuggers" [ref=e73] [cursor=pointer]:
+                    - /url: /tags/debuggers/
+                  - link "interpreters" [ref=e74] [cursor=pointer]:
+                    - /url: /tags/interpreters/
+                  - link "wasm" [ref=e75] [cursor=pointer]:
+                    - /url: /tags/wasm/
+    - complementary "Sidebar" [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e78]: 📝 Recent Posts
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - link "Let's see Paul Allen's SIMD CSV parser" [ref=e82] [cursor=pointer]:
+              - /url: http://localhost:1315/posts/simd-csv/
+            - generic [ref=e83]: NEW!
+            - generic [ref=e84]: 03/18
+          - listitem [ref=e85]:
+            - link "My memory isn't getting worse, it's just using exponential decay" [ref=e86] [cursor=pointer]:
+              - /url: http://localhost:1315/posts/exponential-decay/
+            - generic [ref=e87]: 03/15
+      - generic [ref=e88]:
+        - generic [ref=e89]: 🏷️ Tag Cloud
+        - generic [ref=e91]:
+          - link "csv (1)" [ref=e92] [cursor=pointer]:
+            - /url: /tags/csv/
+          - link "data structures (1)" [ref=e93] [cursor=pointer]:
+            - /url: /tags/data-structures/
+          - link "debuggers (1)" [ref=e94] [cursor=pointer]:
+            - /url: /tags/debuggers/
+          - link "file formats (1)" [ref=e95] [cursor=pointer]:
+            - /url: /tags/file-formats/
+          - link "interpreters (1)" [ref=e96] [cursor=pointer]:
+            - /url: /tags/interpreters/
+          - link "rust (2)" [ref=e97] [cursor=pointer]:
+            - /url: /tags/rust/
+          - link "simd (1)" [ref=e98] [cursor=pointer]:
+            - /url: /tags/simd/
+          - link "wasm (1)" [ref=e99] [cursor=pointer]:
+            - /url: /tags/wasm/
+      - generic [ref=e100]:
+        - generic [ref=e101]: 📅 Archive
+        - list [ref=e103]:
+          - listitem [ref=e104]: 📅 March 2026 (2)
+      - generic [ref=e105]:
+        - generic [ref=e106]: 📊 Site Stats
+        - list [ref=e108]:
+          - listitem [ref=e109]:
+            - strong [ref=e110]: "Posts:"
+            - text: "2"
+          - listitem [ref=e111]:
+            - strong [ref=e112]: "Categories:"
+            - text: "1"
+          - listitem [ref=e113]:
+            - strong [ref=e114]: "Tags:"
+            - text: "8"
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - text: It's time for jokes!
+          - button "Next" [ref=e117] [cursor=pointer]
+        - blockquote [ref=e120]:
+          - paragraph [ref=e121]: Every day I try to expand my vocabulary by using new words to give my arguments more verisimilitude. Today's word is 'expand'.
+          - generic [ref=e122]: — Norm Macdonald Live
+  - contentinfo [ref=e123]:
+    - generic [ref=e124]:
+      - generic [ref=e125]:
+        - heading "Site Map" [level=3] [ref=e126]
+        - list [ref=e127]:
+          - listitem [ref=e128]:
+            - link "Home" [ref=e129] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e130]:
+            - link "Posts" [ref=e131] [cursor=pointer]:
+              - /url: /posts/
+          - listitem [ref=e132]:
+            - link "About" [ref=e133] [cursor=pointer]:
+              - /url: /about/
+          - listitem [ref=e134]:
+            - link "Tags" [ref=e135] [cursor=pointer]:
+              - /url: /tags/
+      - generic [ref=e136]:
+        - heading "Links" [level=3] [ref=e137]
+        - list [ref=e138]:
+          - listitem [ref=e139]:
+            - link "📡 RSS Feed" [ref=e140] [cursor=pointer]:
+              - /url: http://localhost:1315/feed.xml
+          - listitem [ref=e141]:
+            - link "GitHub" [ref=e142] [cursor=pointer]:
+              - /url: https://github.com/friendlymatthew
+      - generic [ref=e143]:
+        - heading "Info" [level=3] [ref=e144]
+        - generic [ref=e145]:
+          - text: "Visitors:"
+          - generic [ref=e146]:
+            - generic [ref=e147]: "0"
+            - generic [ref=e148]: "0"
+            - generic [ref=e149]: "0"
+            - generic [ref=e150]: "0"
+            - generic [ref=e151]: "6"
+            - generic [ref=e152]: "1"
+        - paragraph [ref=e153]: Page loaded in 0.02s
+    - paragraph [ref=e155]: © 2026 friendlymatthew
+```

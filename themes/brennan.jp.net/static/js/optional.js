@@ -20,6 +20,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
+  // Walkthrough byte highlighting
+  document.querySelectorAll('.walkthrough-line').forEach(function(line) {
+    var range = line.getAttribute('data-bytes').split('-');
+    var start = parseInt(range[0]);
+    var end = parseInt(range[1]);
+
+    line.addEventListener('mouseenter', function() {
+      for (var i = start; i <= end; i++) {
+        var el = document.querySelector('.walkthrough-target [data-byte="' + i + '"]');
+        if (el) el.classList.add('byte-hl');
+      }
+    });
+
+    line.addEventListener('mouseleave', function() {
+      for (var i = start; i <= end; i++) {
+        var el = document.querySelector('.walkthrough-target [data-byte="' + i + '"]');
+        if (el) el.classList.remove('byte-hl');
+      }
+    });
+  });
+
+  // On mobile, open links in same tab instead of new tab
+  if (window.innerWidth <= 600) {
+    document.querySelectorAll('a[target="_blank"]').forEach(function(a) {
+      a.removeAttribute('target');
+    });
+  }
+
   // Page load time display
   if (window.performance) {
     const loadTime = (performance.now() / 1000).toFixed(2);
