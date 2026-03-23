@@ -24,6 +24,7 @@
       </span>
       {{ end }}
       <span class="post-reading-time">⏱️ {{ .ReadingTime }} min read</span>
+      <span class="post-readers" data-goatcounter-path="{{ .RelPermalink }}">👀 <span class="reader-count">—</span> readers</span>
       {{ if ne (.Lastmod.Format "2006-01-02") (.Date.Format "2006-01-02") }}
       <span class="post-updated">🔄 Updated: {{ .Lastmod.Format "2006-01-02" }}</span>
       {{ end }}

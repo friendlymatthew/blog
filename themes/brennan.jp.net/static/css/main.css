@@ -1324,6 +1324,10 @@ pre .sc-inside {
   border-bottom: 1px dashed var(--border-color);
 }
 
+.post-meta-bar .post-readers {
+  margin-left: auto;
+}
+
 .post-tags-bar {
   padding: 6px 0;
   font-size: 13px;
@@ -1675,6 +1679,7 @@ figure.hover-caption:focus-within figcaption {
   font-size: 16px;
   border: 1px solid var(--border-color);
 }
+
 
 .page-load-time {
   font-size: 12px;

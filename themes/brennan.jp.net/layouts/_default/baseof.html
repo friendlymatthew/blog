@@ -139,5 +139,22 @@
   {{ partial "footer.html" . }}
 
   <script src="{{ "js/optional.js" | relURL }}" defer></script>
+  <script>
+  (function() {
+    var els = document.querySelectorAll('.post-readers[data-goatcounter-path]');
+    els.forEach(function(el) {
+      var path = el.getAttribute('data-goatcounter-path');
+      var r = new XMLHttpRequest();
+      r.open('GET', 'https://friendlymatthew.goatcounter.com/counter/' + encodeURIComponent(path) + '.json');
+      r.onload = function() {
+        if (r.status === 200) {
+          var count = JSON.parse(r.responseText).count.replace(/\s/g, '');
+          el.querySelector('.reader-count').textContent = parseInt(count, 10).toLocaleString();
+        }
+      };
+      r.send();
+    });
+  })();
+  </script>
 </body>
 </html>

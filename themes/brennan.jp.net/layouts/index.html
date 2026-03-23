@@ -28,6 +28,7 @@
               📁 <a href="{{ "categories/" | relURL }}{{ (index .Params.categories 0) | urlize }}/" class="p-category">{{ index .Params.categories 0 }}</a>
             </span>
             {{ end }}
+            <span class="post-readers" data-goatcounter-path="{{ .RelPermalink }}">👀 <span class="reader-count">—</span> readers</span>
           </div>
           <div class="post-excerpt p-summary">
             {{ .Summary }}
