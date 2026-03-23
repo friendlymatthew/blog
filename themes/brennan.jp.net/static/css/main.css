@@ -742,6 +742,35 @@ pre {
   color: var(--text-muted);
 }
 
+.archive-month details summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.archive-month details summary::-webkit-details-marker {
+  display: none;
+}
+
+.archive-posts {
+  list-style: none;
+  padding-left: 8px;
+  margin: 4px 0 0 0;
+}
+
+.archive-posts li {
+  padding: 2px 0;
+  border-bottom: none;
+}
+
+.archive-posts a {
+  text-decoration: none;
+  color: var(--link-color, #0066FF);
+}
+
+.archive-posts a:hover {
+  text-decoration: underline;
+}
+
 /* Stats Widget */
 .stats-list li {
   padding: 3px 0;

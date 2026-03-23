@@ -11,16 +11,11 @@
   </ul>
 </nav>
 
-{{ if and (not .IsHome) (eq .Section "posts") }}
+{{ if and (not .IsHome) (eq .Section "posts") .IsPage }}
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol>
     <li><a href="{{ "/" | relURL }}">Home</a></li>
-    {{ if .IsPage }}
-    <li><a href="{{ "posts/" | relURL }}">Posts</a></li>
     <li aria-current="page"><span>{{ .Title }}</span></li>
-    {{ else }}
-    <li aria-current="page">Posts</li>
-    {{ end }}
   </ol>
 </nav>
 {{ end }}

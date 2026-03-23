@@ -6,8 +6,17 @@
       {{ $grouped := $pages.GroupByDate "January 2006" }}
       {{ range $grouped }}
       <li class="archive-month">
-        <span class="archive-date">📅 {{ .Key }}</span>
-        <span class="archive-count">({{ len .Pages }})</span>
+        <details>
+          <summary>
+            <span class="archive-date">📅 {{ .Key }}</span>
+            <span class="archive-count">({{ len .Pages }})</span>
+          </summary>
+          <ul class="archive-posts">
+            {{ range .Pages }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{ end }}
+          </ul>
+        </details>
       </li>
       {{ end }}
     </ul>
