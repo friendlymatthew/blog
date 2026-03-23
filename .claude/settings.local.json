@@ -26,7 +26,8 @@
       "Bash(rm:*)",
       "Bash(grep:*)",
       "WebFetch(domain:friendlymatthew.goatcounter.com)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:chunkofcoal.com)"
     ]
   },
   "enableAllProjectMcpServers": true,
