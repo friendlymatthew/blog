@@ -9,7 +9,7 @@
   {{/* This is a taxonomy list page (e.g. /tags/) */}}
   <div class="taxonomy-list">
     {{ range .Data.Terms.Alphabetical }}
-    <a href="{{ .Page.Permalink }}" class="taxonomy-item">
+    <a href="{{ .Page.RelPermalink }}" class="taxonomy-item">
       <span class="taxonomy-name">{{ .Page.Title }}</span>
       <span class="taxonomy-count">({{ .Count }})</span>
     </a>
@@ -28,7 +28,7 @@
     <div class="archive-row {{ if (modBool $index 2) }}archive-row-alt{{ end }}">
       <span class="archive-col-date">{{ .Date.Format "2006-01-02" }}</span>
       <span class="archive-col-title">
-        <a href="{{ .Permalink }}">{{ .Title }}</a>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       </span>
       <span class="archive-col-category">
         {{ with .Params.categories }}

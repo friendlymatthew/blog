@@ -17,7 +17,7 @@
         {{ end }}
         <div class="post-card-content">
           <h3 class="post-title">
-            <a href="{{ .Permalink }}" class="p-name u-url">{{ .Title }}</a>
+            <a href="{{ .RelPermalink }}" class="p-name u-url">{{ .Title }}</a>
           </h3>
           <div class="post-meta">
             {{ if .Date }}
@@ -33,7 +33,7 @@
             {{ .Summary }}
           </div>
           <div class="post-footer">
-            <a href="{{ .Permalink }}" class="read-more">Continue reading »</a>
+            <a href="{{ .RelPermalink }}" class="read-more">Continue reading »</a>
             {{ with .Params.tags }}
             <div class="post-tags">
               {{ range . }}

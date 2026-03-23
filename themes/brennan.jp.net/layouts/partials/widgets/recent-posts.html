@@ -5,7 +5,7 @@
       {{ $count := .Site.Params.recentPostsCount | default 15 }}
       {{ range first $count (where .Site.RegularPages "Section" "posts").ByDate.Reverse }}
       <li class="recent-post-item">
-        <a href="{{ .Permalink }}">{{ .Title }}</a>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         {{ if gt (div (sub now.Unix .Date.Unix) 86400) 3 | not }}
         <span class="badge-new blink">NEW!</span>
         {{ end }}

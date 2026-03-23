@@ -19,10 +19,10 @@
     
     <div class="page-navigation">
       {{ if .PrevInSection }}
-      <a href="{{ .PrevInSection.Permalink }}" class="nav-btn">← {{ .PrevInSection.Title }}</a>
+      <a href="{{ .PrevInSection.RelPermalink }}" class="nav-btn">← {{ .PrevInSection.Title }}</a>
       {{ end }}
       {{ if .NextInSection }}
-      <a href="{{ .NextInSection.Permalink }}" class="nav-btn">{{ .NextInSection.Title }} →</a>
+      <a href="{{ .NextInSection.RelPermalink }}" class="nav-btn">{{ .NextInSection.Title }} →</a>
       {{ end }}
     </div>
   </footer>

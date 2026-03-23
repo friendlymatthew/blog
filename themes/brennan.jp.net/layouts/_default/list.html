@@ -18,7 +18,7 @@
     <div class="archive-row {{ if (modBool $index 2) }}archive-row-alt{{ end }}">
       <span class="archive-col-date">{{ .Date.Format "2006-01-02" }}</span>
       <span class="archive-col-title">
-        <a href="{{ .Permalink }}">{{ .Title }}</a>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         {{ if lt (sub now.Unix .Date.Unix) 259200 }}
         <span class="badge-new blink">NEW!</span>
         {{ end }}
