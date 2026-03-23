@@ -16,7 +16,9 @@ categories: ["programming"]
 </div>
 </div>
 
-<br>
+<div style="border: 1px solid #ccc; border-radius: 4px; padding: 10px 14px; font-size: 0.85em; margin: 1em 0; background: var(--background-secondary, #f9f9f9);">
+<strong>Editor's note:</strong> it seems some readers are confused who Paul Allen is. It is a reference to the movie American Psycho. Good explanation <a target="_blank" href="https://www.reddit.com/r/programming/comments/1s0rldb/comment/obw2tip/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button"> here</a> or <a target="_blank" href="https://lobste.rs/s/702zix/let_s_see_paul_allen_s_simd_csv_parser#c_iliysx">here</a>. It is not a reference to Microsoft co-founder and billionaire Paul Allen and his SIMD CSV parser.
+</div>
 
 [A year ago I wrote a CSV parser that is able to parse 64 characters at a time.](https://github.com/friendlymatthew/simdcsv) It's purely for research and hand waves over crucial steps for a production parser like validation. But the core algorithm uses SIMD and bitwise operations to classify and filter structural characters in bulk, and these are the techniques I'll be talking about today.
 
