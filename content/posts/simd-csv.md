@@ -12,7 +12,7 @@ categories: ["programming"]
 <div style="text-align: center;">
 <div style="display: inline-block; width: 300px; text-align: center;">
 <img src="/images/paulallenscard.png" alt="Paul Allen's card" style="width: 100%;" />
-<p><em>Look at the subtle nibble extraction. The tasteful lookup tables of it. Oh my god, it even has <code>vqtbl1q_u8</code> and <code>vmull_p64</code>.</em></p>
+<p class="image-caption"><em>Look at the subtle nibble extraction. The tasteful lookup tables of it. Oh my god, it even has <code>vqtbl1q_u8</code> and <code>vmull_p64</code>.</em></p>
 </div>
 </div>
 
@@ -356,7 +356,7 @@ fn prefix_xor(x: u64) -> u64 {
 }
 ```
 
-## Step 3: collecting field and row boundaries
+## Step 3: Collecting field and row boundaries
 
 Now that our comma and newline bitmasks only contain real delimiters, we iterate through them one `u64` at a time.
 
