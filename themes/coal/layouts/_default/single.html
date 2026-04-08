@@ -1,0 +1,24 @@
+{{ define "main" }}
+<article>
+  <h1>{{ .Title }}</h1>
+  {{ if eq .Section "posts" }}
+  <div class="post-meta">
+    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+    <span class="post-readers" data-goatcounter-path="{{ .RelPermalink }}"><span class="reader-count"></span> readers</span>
+  </div>
+  {{ end }}
+  <div class="content">
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}
+
+{{ define "footer" }}
+{{ if eq .Section "posts" }}
+<nav>
+  <a href="/">writing</a>
+  <a href="/about/">about</a>
+  <a href="https://github.com/friendlymatthew">github</a>
+</nav>
+{{ end }}
+{{ end }}

@@ -1,0 +1,7 @@
+name = "coal"
+license = "MIT"
+description = "A minimal theme for chunkofcoal.com"
+min_version = "0.120.0"
+
+[author]
+name = "friendlymatthew"

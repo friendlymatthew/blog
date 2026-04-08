@@ -30,29 +30,29 @@ The challenge lies in which snapshots to keep and which ones to discard. We want
 
 [When I shared my project on lobste.rs](https://lobste.rs/s/eu5uiz/fully_snapshotable_wasm_interpreter), I was linked an [amazing blog post](https://awelonblue.wordpress.com/2013/01/24/exponential-decay-of-history-improved/). The author David Barbour introduces a data structure called an exponential decay buffer. The idea is simple: keep lots of recent snapshots and gradually fewer as you go further back. Barbour proceeds to drop some {{< hover-image src="/images/suhdud.jpg" alt="suhdud" width="350" >}}#knowledge{{< /hover-image >}} about how you can hold deep history in very little space, at the cost of losing intermediate detail the further back you go.
 
-The density of snapshots halves at a fixed interval called the **half life**. This turns out to be incredibly space efficient, because each half life worth of storage doubles your reach. If you can hold 1,000 snapshots with a half life of 50, you don't just cover the last 1,000 instructions. You cover $2^{1000/50} = 2^{20} \approx$ one million instructions. Store 2,000 snapshots and you get $2^{40}$, roughly a trillion instructions.
+The density of snapshots halves at a fixed interval called the **half life**. This turns out to be incredibly space efficient, because each half life worth of storage doubles your reach. If you can hold 1,000 snapshots with a half life of 50, you don't just cover the last 1,000 instructions. You cover $2^{1000/50} = 2^{20} \approx \text{1 million}$ instructions. Store 2,000 snapshots and you get $2^{40}$, roughly a trillion instructions.
 
 Play with the sliders below to see how the number of snapshots and half life affect your reach:
 
-<div style="margin: 20px 0; padding: 20px; border: 2px solid var(--border-color); background: var(--widget-background); border-radius: 4px;">
+<div style="margin: 20px 0; padding: 20px; border: 2px solid #a2a9b1; background: #f8f9fa; border-radius: 4px;">
   <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-    <label style="color: var(--text-secondary); font-size: 14px; min-width: 100px;">snapshots:</label>
+    <label style="color: #666; font-size: 14px; min-width: 100px;">snapshots:</label>
     <input type="range" id="reach-snapshots" min="100" max="5000" value="1000" step="100" style="flex: 1;" />
-    <span id="reach-snapshots-val" style="color: var(--nav-orange); font-weight: bold; font-size: 14px; min-width: 45px;">1000</span>
+    <span id="reach-snapshots-val" style="color: #e25822; font-weight: bold; font-size: 14px; min-width: 45px;">1000</span>
   </div>
   <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-    <label style="color: var(--text-secondary); font-size: 14px; min-width: 100px;">half life:</label>
+    <label style="color: #666; font-size: 14px; min-width: 100px;">half life:</label>
     <input type="range" id="reach-halflife" min="10" max="200" value="50" step="5" style="flex: 1;" />
-    <span id="reach-halflife-val" style="color: var(--nav-orange); font-weight: bold; font-size: 14px; min-width: 45px;">50</span>
+    <span id="reach-halflife-val" style="color: #e25822; font-weight: bold; font-size: 14px; min-width: 45px;">50</span>
   </div>
-  <div style="text-align: center; font-size: 18px; color: var(--text-color); margin-bottom: 8px;">
-    $2^{\,}$<sup style="font-size: 16px;"><span id="reach-n" style="color: var(--nav-orange);">1000</span> / <span id="reach-h" style="color: var(--nav-orange);">50</span></sup> = $2^{\,}$<sup style="font-size: 16px;"><span id="reach-exp" style="color: var(--nav-orange);">20</span></sup> = <span id="reach-value" style="color: var(--nav-orange); font-weight: bold;"></span>
+  <div style="text-align: center; font-size: 18px; color: #000; margin-bottom: 8px;">
+    $2^{\,}$<sup style="font-size: 16px;"><span id="reach-n" style="color: #e25822;">1000</span> / <span id="reach-h" style="color: #e25822;">50</span></sup> = $2^{\,}$<sup style="font-size: 16px;"><span id="reach-exp" style="color: #e25822;">20</span></sup> = <span id="reach-value" style="color: #e25822; font-weight: bold;"></span>
   </div>
-  <div style="text-align: center; font-size: 16px; color: var(--text-color); padding: 12px 16px 0;">
+  <div style="text-align: center; font-size: 16px; color: #000; padding: 12px 16px 0;">
     With <strong><span id="reach-snap-txt">1,000</span></strong> snapshots where every <strong><span id="reach-hl-txt">50</span></strong> snapshots back you keep half as many, you can debug the last
   </div>
   <div style="text-align: center; padding: 2px 0 12px;">
-    <span style="font-size: 28px; font-weight: bold; color: var(--nav-orange);"><span id="reach-display"></span></span> <span id="reach-unit" style="font-size: 16px; color: var(--text-muted);">instructions</span>
+    <span style="font-size: 28px; font-weight: bold; color: #e25822;"><span id="reach-display"></span></span> <span id="reach-unit" style="font-size: 16px; color: #999;">instructions</span>
   </div>
 </div>
 
@@ -121,17 +121,17 @@ where $U \sim \text{Uniform}(0, 1)$ and $h$ is the half life. Lower indices (old
 
 The visualization below shows the eviction probability for each slot in a buffer of 100. Drag the slider to change the half life and watch how the distribution shifts. Slots on the left are older and get evicted more often (higher bar height). Slots on the right are newer and almost never touched.
 
-<div id="decay-viz" style="margin: 20px 0; padding: 16px; border: 2px solid var(--border-color); background: var(--widget-background); border-radius: 4px;">
-  <div style="color: var(--text-color); font-size: 14px; margin-bottom: 8px;"><strong>buffer capacity:</strong> <span style="color: var(--nav-orange); font-weight: bold;">100</span> &nbsp; <strong>half life:</strong> <span id="half-life-title" style="color: var(--nav-orange); font-weight: bold;">50</span></div>
+<div id="decay-viz" style="margin: 20px 0; padding: 16px; border: 2px solid #a2a9b1; background: #f8f9fa; border-radius: 4px;">
+  <div style="color: #000; font-size: 14px; margin-bottom: 8px;"><strong>buffer capacity:</strong> <span style="color: #e25822; font-weight: bold;">100</span> &nbsp; <strong>half life:</strong> <span id="half-life-title" style="color: #e25822; font-weight: bold;">50</span></div>
   <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-    <label for="half-life-slider" style="color: var(--text-secondary); font-size: 14px; white-space: nowrap;">half_life:</label>
+    <label for="half-life-slider" style="color: #666; font-size: 14px; white-space: nowrap;">half_life:</label>
     <input type="range" id="half-life-slider" min="20" max="80" value="50" step="1" style="flex: 1;" />
-    <span id="half-life-value" style="color: var(--nav-orange); font-weight: bold; font-size: 14px; min-width: 24px;">50</span>
+    <span id="half-life-value" style="color: #e25822; font-weight: bold; font-size: 14px; min-width: 24px;">50</span>
   </div>
-  <canvas id="decay-canvas" style="width: 100%; height: 300px; background: var(--background-secondary); border: 1px solid var(--border-color);"></canvas>
+  <canvas id="decay-canvas" style="width: 100%; height: 300px; background: #f0f0f0; border: 1px solid #a2a9b1;"></canvas>
   <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-    <span style="color: var(--text-muted); font-size: 12px;">← older (more likely to evict)</span>
-    <span style="color: var(--text-muted); font-size: 12px;">newer (less likely to evict) →</span>
+    <span style="color: #999; font-size: 12px;">← older (more likely to evict)</span>
+    <span style="color: #999; font-size: 12px;">newer (less likely to evict) →</span>
   </div>
 </div>
 
@@ -235,12 +235,12 @@ The visualization below shows the eviction probability for each slot in a buffer
 
 For the debugger, I set the **half life** to 50 and **buffer capacity** to 1,000 snapshots. That's $2^{1000/50} = 2^{20} \approx 1{,}048{,}576$ instructions of reachable history. And the eviction curve is steep. Old snapshots get aggressively culled while recent history stays almost untouched:
 
-<div id="fixed-decay-viz" style="margin: 20px 0; padding: 16px; border: 2px solid var(--border-color); background: var(--widget-background); border-radius: 4px;">
-  <div style="color: var(--text-color); font-size: 14px; margin-bottom: 12px;"><strong>buffer capacity:</strong> <span style="color: var(--nav-orange); font-weight: bold;">1,000</span> &nbsp; <strong>half life:</strong> <span style="color: var(--nav-orange); font-weight: bold;">50</span></div>
-  <canvas id="fixed-decay-canvas" style="width: 100%; background: var(--background-secondary); border: 1px solid var(--border-color);"></canvas>
+<div id="fixed-decay-viz" style="margin: 20px 0; padding: 16px; border: 2px solid #a2a9b1; background: #f8f9fa; border-radius: 4px;">
+  <div style="color: #000; font-size: 14px; margin-bottom: 12px;"><strong>buffer capacity:</strong> <span style="color: #e25822; font-weight: bold;">1,000</span> &nbsp; <strong>half life:</strong> <span style="color: #e25822; font-weight: bold;">50</span></div>
+  <canvas id="fixed-decay-canvas" style="width: 100%; background: #f0f0f0; border: 1px solid #a2a9b1;"></canvas>
   <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-    <span style="color: var(--text-muted); font-size: 12px;">← older (more likely to evict)</span>
-    <span style="color: var(--text-muted); font-size: 12px;">newer (less likely to evict) →</span>
+    <span style="color: #999; font-size: 12px;">← older (more likely to evict)</span>
+    <span style="color: #999; font-size: 12px;">newer (less likely to evict) →</span>
   </div>
 </div>
 

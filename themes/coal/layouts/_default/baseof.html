@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ .Description | default .Site.Params.description }}">
+  <meta name="author" content="{{ .Site.Params.author }}">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="{{ .Title | default .Site.Title }}">
+  <meta property="og:description" content="{{ .Description | default .Site.Params.description }}">
+  <meta property="og:type" content="{{ if .IsHome }}website{{ else }}article{{ end }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:site_name" content="{{ .Site.Title }}">
+  {{ with .Params.featured_image }}
+  <meta property="og:image" content="{{ . | absURL }}">
+  {{ end }}
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ .Title | default .Site.Title }}">
+  <meta name="twitter:description" content="{{ .Description | default .Site.Params.description }}">
+  {{ with .Params.featured_image }}
+  <meta name="twitter:image" content="{{ . | absURL }}">
+  {{ end }}
+
+  <link rel="canonical" href="{{ .Permalink }}">
+
+  <title>{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+
+  {{ $cacheBust := "3" }}
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ "favicon/apple-touch-icon.png" | relURL }}?v={{ $cacheBust }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon/favicon-32x32.png" | relURL }}?v={{ $cacheBust }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon/favicon-16x16.png" | relURL }}?v={{ $cacheBust }}">
+  <link rel="shortcut icon" href="{{ "favicon/favicon.ico" | relURL }}?v={{ $cacheBust }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "css/darcula.css" | relURL }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "feed.xml" | absURL }}">
+
+  {{ block "head" . }}{{ end }}
+</head>
+<body>
+  <nav>
+    <a href="/">writing</a>
+    <a href="/about/">about</a>
+    <a href="https://github.com/friendlymatthew">github</a>
+  </nav>
+
+  <main>
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  {{ block "footer" . }}{{ end }}
+
+  <script>
+  var isMobile = window.matchMedia('(pointer: coarse)').matches;
+  var scrollHidden = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollHidden) {
+      scrollHidden = true;
+      document.querySelectorAll('.hover-image-trigger.hover-active').forEach(function(t) {
+        t.classList.remove('hover-active');
+      });
+      document.body.classList.add('scroll-hiding');
+    }
+  }, { passive: true });
+  document.addEventListener('mousemove', function() {
+    if (scrollHidden) {
+      scrollHidden = false;
+      document.body.classList.remove('scroll-hiding');
+    }
+  });
+  if (isMobile) {
+    document.addEventListener('click', function(e) {
+      var trigger = e.target.closest('.hover-image-trigger');
+      document.querySelectorAll('.hover-image-trigger.hover-active').forEach(function(t) {
+        if (t !== trigger) t.classList.remove('hover-active');
+      });
+      if (!trigger) return;
+      if (trigger.classList.contains('hover-active')) {
+        trigger.classList.remove('hover-active');
+        return;
+      }
+      trigger.classList.add('hover-active');
+      var popup = trigger.querySelector('.hover-image-popup');
+      if (!popup) return;
+      var rect = trigger.getBoundingClientRect();
+      popup.style.top = (rect.bottom + 8) + 'px';
+      popup.style.visibility = 'hidden';
+      requestAnimationFrame(function() {
+        var popupRect = popup.getBoundingClientRect();
+        if (popupRect.bottom > window.innerHeight) {
+          popup.style.top = (rect.top - popupRect.height - 8) + 'px';
+        }
+        popup.style.visibility = '';
+      });
+    });
+  } else {
+    document.addEventListener('mousemove', function(e) {
+      var trigger = e.target.closest('.hover-image-trigger');
+      if (!trigger) return;
+      var popup = trigger.querySelector('.hover-image-popup');
+      if (!popup) return;
+      var rect = trigger.getBoundingClientRect();
+      var spaceBelow = window.innerHeight - rect.bottom - 16;
+      var spaceAbove = rect.top - 16;
+      var placeBelow = spaceBelow >= spaceAbove;
+      var maxH = placeBelow ? spaceBelow : spaceAbove;
+
+      popup.style.maxHeight = maxH + 'px';
+      popup.style.overflow = 'hidden';
+
+      var ph = popup.offsetHeight;
+      var x = e.clientX + 12;
+      if (x + popup.offsetWidth > window.innerWidth) x = window.innerWidth - popup.offsetWidth - 8;
+      if (x < 8) x = 8;
+      var y = placeBelow ? rect.bottom + 8 : rect.top - ph - 8;
+
+      popup.style.left = x + 'px';
+      popup.style.top = y + 'px';
+    });
+  }
+  </script>
+  <script>
+  (function() {
+    var els = document.querySelectorAll('.post-readers[data-goatcounter-path]');
+    els.forEach(function(el) {
+      var path = el.getAttribute('data-goatcounter-path');
+      var r = new XMLHttpRequest();
+      r.open('GET', 'https://friendlymatthew.goatcounter.com/counter/' + encodeURIComponent(path) + '.json');
+      r.onload = function() {
+        if (r.status === 200) {
+          var count = JSON.parse(r.responseText).count.replace(/\s/g, '');
+          el.querySelector('.reader-count').textContent = parseInt(count, 10).toLocaleString();
+        }
+      };
+      r.send();
+    });
+  })();
+  </script>
+  <script>
+  document.querySelectorAll('.walkthrough-line').forEach(function(line) {
+    var range = line.getAttribute('data-bytes').split('-');
+    var start = parseInt(range[0]);
+    var end = parseInt(range[1]);
+    line.addEventListener('mouseenter', function() {
+      for (var i = start; i <= end; i++) {
+        var el = document.querySelector('.walkthrough-target [data-byte="' + i + '"]');
+        if (el) el.classList.add('byte-hl');
+      }
+    });
+    line.addEventListener('mouseleave', function() {
+      for (var i = start; i <= end; i++) {
+        var el = document.querySelector('.walkthrough-target [data-byte="' + i + '"]');
+        if (el) el.classList.remove('byte-hl');
+      }
+    });
+  });
+  </script>
+  <script data-goatcounter="https://friendlymatthew.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

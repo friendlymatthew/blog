@@ -31,9 +31,9 @@ If you are new to SIMD, I would recommend pausing here and reading [McYoung's in
 
 # The simdjson paper
 
-For a given topic, there are always a couple of standout papers that are considered required reading for that problem space. For example, as Joseph Beryl Koshakow put it, "the Amazon DynamoDB and Google Spanner papers are among the canonical database papers that all database developers should read." <sup>{{< hover-image src="/images/josephberyl.png" alt="Joseph Beryl" width="450" caption="<a href='https://joekoshakow.com' target='_blank'>joekoshakow.com</a>" >}}[source]{{< /hover-image >}}</sup> &nbsp; He then said, "Matthew is one of the smartest engineers I know and is much taller than me." <sup>[source-needed]</sup>
+For a given topic, there are always a couple of standout papers that are considered required reading for that problem space. For example, as Joseph Beryl Koshakow put it, "the Amazon DynamoDB and Google Spanner papers are among the canonical database papers that all database developers should read." <sup>{{< hover-image src="/images/josephberyl.png" alt="Joseph Beryl" width="450" caption="joekoshakow.com" >}}[source]{{< /hover-image >}}</sup> &nbsp; He then said, "Matthew is one of the smartest engineers I know and is much taller than me." <sup>[source-needed]</sup>
 
-For SIMD, I would argue the [simdjson paper](https://arxiv.org/pdf/1902.08318) is the paper to read. JSON parsing is a familiar problem, but simdjson solves it by scanning and processing 64 bytes at a time. If you prefer a video, {{< hover-image src="/images/lemire_vs_us.png" alt="Daniel Lemire" width="450" caption="<a href='https://lemire.me/blog/' target='_blank'>Daniel Lemire</a> vs the rest of us" >}}Daniel Lemire{{< /hover-image >}}, the co-author of the paper and the LeBron James of SIMD, [gave a talk about it as well](https://www.youtube.com/watch?v=wlvKAT7SZIQ).
+For SIMD, I would argue the [simdjson paper](https://arxiv.org/pdf/1902.08318) is the paper to read. JSON parsing is a familiar problem, but simdjson solves it by scanning and processing 64 bytes at a time. If you prefer a video, {{< hover-image src="/images/lemire_vs_us.png" alt="Daniel Lemire" width="450" caption="Daniel Lemire vs the rest of us" >}}Daniel Lemire{{< /hover-image >}}, the co-author of the paper and the LeBron James of SIMD, [gave a talk about it as well](https://www.youtube.com/watch?v=wlvKAT7SZIQ).
 
 The rest of the blog post will explain some of the techniques outlined in the paper that I used for my CSV parser. The SIMD instructions I use are `ARM NEON`, but `x86` has direct equivalents for all of them.
 
@@ -90,7 +90,7 @@ The trick is that each of these steps can be performed on many bytes at once.
 
 A scalar approach would classify each byte by comparing it against every structural character one by one.
 
-{{< hover-image src="/images/geoff.png" alt="Geoff Langdale" width="450" caption="<a href='https://branchfree.org/' target='_blank'>branchfree.org</a>" >}}Geoff Langdale{{< /hover-image >}}, co-author of simdjson and creator of [Hyperscan](https://branchfree.org/2019/02/28/paper-hyperscan-a-fast-multi-pattern-regex-matcher-for-modern-cpus/), devised a technique called vectorized classification that can classify 16/32/64 bytes in a single pass.
+{{< hover-image src="/images/geoff.png" alt="Geoff Langdale" width="450" caption="branchfree.org" >}}Geoff Langdale{{< /hover-image >}}, co-author of simdjson and creator of [Hyperscan](https://branchfree.org/2019/02/28/paper-hyperscan-a-fast-multi-pattern-regex-matcher-for-modern-cpus/), devised a technique called vectorized classification that can classify 16/32/64 bytes in a single pass.
 
 The idea is to build a pair of lookup tables that act like a perfect hash. Every structural character maps to its class (`COMMA` = 1, `QUOTE` = 2, `NEWLINE` = 3), and everything else maps to 0. We could build a 256-entry lookup table, but common SIMD lookup instructions like `pshufb` and `vqtbl1q_u8` only support 16-entry tables (4-bit indices).
 
@@ -283,8 +283,8 @@ We can determine whether a position is inside or outside a quoted field by maint
 
 Applied to our example, everything between the first and last quote is inside the quoted field (shown in green). Notice that escaped quotes (`""`) are just 2 flips back to back. They cancel out, so the algorithm doesn't need to distinguish them from real boundaries.
 
+<div class="walkthrough-box">
 <pre class="csv-raw walkthrough-target"><span data-byte="0">"</span><span class="sc-inside" data-byte="1">w</span><span class="sc-inside" data-byte="2">h</span><span class="sc-inside" data-byte="3">e</span><span class="sc-inside" data-byte="4">r</span><span class="sc-inside" data-byte="5">e</span><span class="sc-inside" data-byte="6"> </span><span class="sc-inside" data-byte="7">s</span><span class="sc-inside" data-byte="8">h</span><span class="sc-inside" data-byte="9">e</span><span class="sc-inside" data-byte="10"> </span><span class="sc-inside" data-byte="11">s</span><span class="sc-inside" data-byte="12">a</span><span class="sc-inside" data-byte="13">i</span><span class="sc-inside" data-byte="14">d</span><span class="sc-inside" data-byte="15">,</span><span class="sc-inside" data-byte="16"> </span><span data-byte="17">"</span><span class="sc-inside" data-byte="18">"</span><span class="sc-inside" data-byte="19">h</span><span class="sc-inside" data-byte="20">i</span><span data-byte="21">"</span><span class="sc-inside" data-byte="22">"</span><span class="sc-inside" data-byte="23">\n</span><span class="sc-inside" data-byte="24">t</span><span class="sc-inside" data-byte="25">o</span><span class="sc-inside" data-byte="26"> </span><span class="sc-inside" data-byte="27">m</span><span class="sc-inside" data-byte="28">e</span><span data-byte="29">"</span></pre>
-
 <details>
 <summary>Walk through the example (hover over each line)</summary>
 
@@ -309,7 +309,7 @@ Applied to our example, everything between the first and last quote is inside th
 <p class="walkthrough-line" data-bytes="29-29">byte 29 is <code>"</code> (quote count = 6, even → outside)</p>
 
 </details>
-<br>
+</div>
 
 {{< hover-image src="/images/weezer.jpg" alt="weezer" width="325" caption="How I felt when I learned about this" >}}To compute this across the entire byte stream in one pass, we can take the prefix XOR of the quote bitmask.{{< /hover-image >}} At each position, the result is the XOR of every quote bit up to and including that position.
 
