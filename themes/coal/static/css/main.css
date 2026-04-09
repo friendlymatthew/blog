@@ -177,7 +177,12 @@ blockquote {
   pointer-events: none;
 }
 
-.hover-image-trigger:hover .hover-image-popup,
+@media (hover: hover) {
+  .hover-image-trigger:hover .hover-image-popup {
+    display: block;
+  }
+}
+
 .hover-image-trigger.hover-active .hover-image-popup {
   display: block;
 }
@@ -220,6 +225,7 @@ blockquote {
   font-size: 0.8em;
   color: #54595d;
   padding: 4px 4px 2px;
+  margin: 0;
   line-height: 1.4;
 }
 
