@@ -1,5 +1,6 @@
 ---
 title: "Let's see Paul Allen's SIMD CSV parser"
+description: "Building a CSV parser that processes 64 characters at a time using SIMD and bitwise operations in Rust"
 date: 2026-03-20
 draft: false
 featured_image: "/images/paulallenscard.png"

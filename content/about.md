@@ -1,5 +1,6 @@
 ---
 title: "About"
+description: "About friendlymatthew — Rust programmer, open source contributor, and systems enthusiast based in NYC"
 featured_image: "/images/me.jpg"
 ---
 

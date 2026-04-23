@@ -27,14 +27,26 @@ article + nav {
 nav a {
   font-family: 'Inter', sans-serif;
   margin-right: 1rem;
-}
-
-a {
   color: #0000EE;
 }
 
-a:visited {
+nav a:visited {
   color: #551A8B;
+}
+
+nav a.active,
+nav a.active:visited {
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+a {
+  color: #3366cc;
+}
+
+a:visited {
+  color: #795cb2;
 }
 
 h1, h2, h3, h4 {
@@ -149,6 +161,11 @@ blockquote {
 
 .post-list a {
   font-family: 'Inter', sans-serif;
+  color: #0000EE;
+}
+
+.post-list a:visited {
+  color: #551A8B;
 }
 
 .post-list .date {
@@ -356,6 +373,10 @@ summary {
   body {
     font-size: 16px;
     padding: 1rem;
+  }
+
+  article {
+    padding-right: 3rem;
   }
 
   .post-list .date,

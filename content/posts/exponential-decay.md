@@ -1,5 +1,6 @@
 ---
 title: "My memory isn't getting worse, it's just using exponential decay"
+description: "Implementing a time travel debugger for a WASM interpreter using exponential decay to efficiently manage execution snapshots"
 date: 2026-03-15
 draft: false
 tags: ["rust", "data structures", "debuggers", "interpreters", "wasm"]

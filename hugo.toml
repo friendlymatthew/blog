@@ -11,7 +11,7 @@ category = "categories"
 tag = "tags"
 
 [params]
-description = "https://github.com/friendlymatthew"
+description = "friendlymatthew's blog about programming, Rust, SIMD, file formats, and databases"
 author = "friendlymatthew"
 featured_image = "/images/me.jpg"
 github = "friendlymatthew"
