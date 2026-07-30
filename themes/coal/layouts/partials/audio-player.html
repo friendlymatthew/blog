@@ -1,0 +1,30 @@
+{{ $tracks := readDir "static/audio/playlist" }}
+{{ if $tracks }}
+{{ $featuredTracks := slice
+  "04 - Take These Chains From My Heart - steel guitar [UDOEqR2hR-4].webm"
+  "05 - San Antonio Rose - steel guitar [XoL8joCvsZI].webm"
+  "10 - Blue Christmas - steel guitar [mCkhvzArpgs].webm"
+}}
+<section class="audio-player" aria-label="Lap steel playlist">
+  <output class="audio-player-time" hidden>0:00 / 0:00</output>
+  <select class="audio-player-track" hidden aria-hidden="true" tabindex="-1">
+    {{ range $tracks }}
+      {{ if and (not .IsDir) (in $featuredTracks .Name) }}
+        {{ $title := replaceRE `^\d+\s*-\s*` "" .Name }}
+        {{ $title = replaceRE `\s*\[[^\]]+\]\.[^.]+$` "" $title }}
+        {{ $title = replaceRE `(?i)\s*-\s*steel guitar` "" $title }}
+        <option value="{{ printf "/audio/playlist/%s" .Name }}">{{ $title }}</option>
+      {{ end }}
+    {{ end }}
+  </select>
+
+  <div class="audio-player-string-progress">
+    <button class="audio-player-string-handle audio-player-string-handle-start" type="button" aria-label="Move start of wire"></button>
+    <canvas class="audio-player-spectrum" width="680" height="44" aria-hidden="true"></canvas>
+    <input class="audio-player-progress" type="range" min="0" max="1000" value="0" aria-label="Track position">
+    <button class="audio-player-string-handle audio-player-string-handle-end" type="button" aria-label="Move end of wire"></button>
+  </div>
+
+  <audio class="audio-player-media" preload="metadata"></audio>
+</section>
+{{ end }}

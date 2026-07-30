@@ -40,6 +40,7 @@
   <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
   <link rel="stylesheet" href="{{ "css/darcula.css" | relURL }}">
   <script defer src="{{ "js/highlight-share.js" | relURL }}"></script>
+  <script defer src="{{ "js/audio-player.js" | relURL }}"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
@@ -89,17 +90,24 @@
   {{ block "head" . }}{{ end }}
 </head>
 <body>
-  <nav>
-    <a href="/">writing</a>
-    <a href="/about/">about</a>
-    <a href="https://github.com/friendlymatthew">github</a>
+  <nav class="site-nav">
+    <div class="site-links">
+      <a href="/">writing</a>
+      <a href="/about/">about</a>
+      <a href="https://github.com/friendlymatthew">github</a>
+      <button class="audio-player-toggle" type="button" aria-label="Play music">play music</button>
+      <button class="audio-player-wire-reset" type="button" hidden>reset wire</button>
+    </div>
+    {{ partial "audio-player.html" . }}
   </nav>
 
-  <main>
+  <main id="page-content">
     {{ block "main" . }}{{ end }}
   </main>
 
-  {{ block "footer" . }}{{ end }}
+  <div id="page-footer">
+    {{ block "footer" . }}{{ end }}
+  </div>
 
   <script>
   var isMobile = window.matchMedia('(pointer: coarse)').matches;
