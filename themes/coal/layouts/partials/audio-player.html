@@ -1,20 +1,22 @@
 {{ $tracks := readDir "static/audio/playlist" }}
 {{ if $tracks }}
 {{ $featuredTracks := slice
-  "04 - Take These Chains From My Heart - steel guitar [UDOEqR2hR-4].webm"
   "05 - San Antonio Rose - steel guitar [XoL8joCvsZI].webm"
+  "04 - Take These Chains From My Heart - steel guitar [UDOEqR2hR-4].webm"
   "10 - Blue Christmas - steel guitar [mCkhvzArpgs].webm"
 }}
-<section class="audio-player" aria-label="Lap steel playlist">
+<section class="audio-player" aria-label="Lap steel playlist" data-current-song="San Antonio Rose" data-performer="Doug Beaumier">
+  <p class="audio-player-attribution" hidden>
+    Current song: <span class="audio-player-attribution-title">San Antonio Rose</span>
+    — performed by <span class="audio-player-attribution-performer">Doug Beaumier</span>
+  </p>
   <output class="audio-player-time" hidden>0:00 / 0:00</output>
   <select class="audio-player-track" hidden aria-hidden="true" tabindex="-1">
-    {{ range $tracks }}
-      {{ if and (not .IsDir) (in $featuredTracks .Name) }}
-        {{ $title := replaceRE `^\d+\s*-\s*` "" .Name }}
-        {{ $title = replaceRE `\s*\[[^\]]+\]\.[^.]+$` "" $title }}
-        {{ $title = replaceRE `(?i)\s*-\s*steel guitar` "" $title }}
-        <option value="{{ printf "/audio/playlist/%s" .Name }}">{{ $title }}</option>
-      {{ end }}
+    {{ range $featuredTracks }}
+      {{ $title := replaceRE `^\d+\s*-\s*` "" . }}
+      {{ $title = replaceRE `\s*\[[^\]]+\]\.[^.]+$` "" $title }}
+      {{ $title = replaceRE `(?i)\s*-\s*steel guitar` "" $title }}
+      <option value="{{ printf "/audio/playlist/%s" . }}">{{ $title }}</option>
     {{ end }}
   </select>
 

@@ -12,6 +12,8 @@
   var startHandle = player.querySelector('.audio-player-string-handle-start');
   var endHandle = player.querySelector('.audio-player-string-handle-end');
   var resetWireButton = document.querySelector('.audio-player-wire-reset');
+  var attributionTitle = player.querySelector('.audio-player-attribution-title');
+  var performer = 'Doug Beaumier';
   var context = null;
   var analyser = null;
   var animationFrame = null;
@@ -65,11 +67,16 @@
   }
 
   function updateMediaMetadata() {
+    var title = track.options[track.selectedIndex].text;
+    player.dataset.currentSong = title;
+    player.dataset.performer = performer;
+    if (attributionTitle) attributionTitle.textContent = title;
+
     if (!('mediaSession' in navigator) || !window.MediaMetadata) return;
 
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: track.options[track.selectedIndex].text,
-      artist: 'Lap steel playlist',
+      title: title,
+      artist: performer,
       album: 'chunkofcoal.com'
     });
   }
