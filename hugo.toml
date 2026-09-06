@@ -15,6 +15,7 @@ description = "friendlymatthew's blog about programming, Rust, SIMD, file format
 author = "friendlymatthew"
 featured_image = "/images/me.jpg"
 github = "friendlymatthew"
+show_audio_player = false
 
 [markup]
 [markup.goldmark]
