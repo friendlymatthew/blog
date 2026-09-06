@@ -19,7 +19,7 @@ I currently live in New York City and work at [Pydantic](https://pydantic.dev) a
 
 I {{< hover-image src="/images/the_lads.jpg" alt="The lads" width="500" >}}went to Wesleyan {{< /hover-image >}} but would consider myself self taught.
 
-When I'm not programming, I spend my time training jiu jitsu or spending time with my friends. 
+When I'm not programming, I spend my time training jiu jitsu or hanging out with friends. 
 
 I really love Norm Macdonald.
 
