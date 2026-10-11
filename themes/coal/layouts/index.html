@@ -1,10 +1,7 @@
 {{ define "main" }}
-<ul class="post-list">
-  {{ range where .Site.RegularPages "Section" "posts" }}
-  <li>
-    <span class="date">{{ .Date.Format "2006-01-02" }}</span>
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-  </li>
-  {{ end }}
-</ul>
+<article>
+  <div class="content">
+    {{ .Content }}
+  </div>
+</article>
 {{ end }}

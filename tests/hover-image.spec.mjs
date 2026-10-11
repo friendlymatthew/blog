@@ -3,7 +3,7 @@ import { test, expect } from 'playwright/test';
 test.describe('hover-image popup — mobile', () => {
   test.beforeEach(async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'desktop-chrome');
-    await page.goto('/about/');
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
 
@@ -88,7 +88,7 @@ test.describe('hover-image popup — mobile', () => {
 test.describe('hover-image popup — desktop', () => {
   test.beforeEach(async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile-chrome');
-    await page.goto('/about/');
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
 
