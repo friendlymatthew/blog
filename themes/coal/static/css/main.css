@@ -577,3 +577,51 @@ mark.highlight-link {
   background: #5e5e5e;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.26), 0 3px 6px rgba(0, 0, 0, 0.14);
 }
+
+/* zoom into armando's mouth */
+.mouth-zoom {
+  position: relative;
+  overflow: hidden;
+  cursor: zoom-in;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mouth-zoom.zoomed {
+  cursor: grab;
+  touch-action: none;
+}
+
+.mouth-zoom.maxed {
+  cursor: zoom-out;
+}
+
+.mouth-zoom.animate {
+  transition: height 0.35s ease;
+}
+
+.mouth-zoom-stage {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+.mouth-zoom.animate .mouth-zoom-stage,
+.mouth-zoom.animate .mouth-zoom-inner {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.about-image-float .mouth-zoom-stage img {
+  -webkit-user-drag: none;
+}
+
+.about-image-float img.mouth-zoom-inner {
+  position: absolute;
+  left: 46.4%;
+  top: 44.55%;
+  width: 2.4%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+}

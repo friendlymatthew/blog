@@ -6,7 +6,7 @@ featured_image: "/images/me.jpg"
 ---
 
 <div class="about-image-float">
-  <img src="/images/armando.png" alt="My friend Armando" />
+  {{< mouth-zoom src="/images/armando.png" alt="My friend Armando" inner="/images/me-full.jpg" inner-alt="Me" >}}
   <p class="about-image-caption">There are billions of people who are not me. This is one example, it's my friend Armando.</p>
 </div>
 

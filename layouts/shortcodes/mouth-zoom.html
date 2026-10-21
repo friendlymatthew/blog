@@ -1,0 +1,7 @@
+<div class="mouth-zoom">
+  <div class="mouth-zoom-stage">
+    <img src="{{ .Get "src" }}" alt="{{ .Get "alt" | default "" }}" />
+    <img class="mouth-zoom-inner" src="{{ .Get "inner" }}" alt="{{ .Get "inner-alt" | default "" }}" />
+  </div>
+</div>
+{{ with resources.Get "js/mouth-zoom.js" }}{{ with . | fingerprint }}<script defer src="{{ .RelPermalink }}"></script>{{ end }}{{ end }}

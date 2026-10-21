@@ -1,0 +1,19 @@
+# Render Blueprint for the presence server (presence/), which lets readers on the same page see each
+# other's hands. The blog itself is still built and hosted by GitHub Pages.
+services:
+  - type: web
+    name: presence
+    runtime: rust
+    plan: free
+    rootDir: presence
+    buildCommand: cargo build --release
+    startCommand: ./target/release/presence
+    healthCheckPath: /
+    # Only rebuild when the server changes, not on every blog post.
+    buildFilter:
+      paths:
+        - presence/**
+    envVars:
+      # Only pages on the blog may connect.
+      - key: ALLOWED_ORIGINS
+        value: https://chunkofcoal.com,https://www.chunkofcoal.com
