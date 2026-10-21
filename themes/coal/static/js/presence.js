@@ -27,10 +27,20 @@
   const SWEEP_STEP = 4;        // px between points when measuring how a path turns
   const CIRCLE_HOLD_MS = 600;
 
+  // How close two hands (waving) or loops (circling) must be to meet; the same as the server's.
+  const FIVE_DISTANCE = 70;
+  const HUG_DISTANCE = 100;
+
   const INK = '#241b2f';
 
   document.head.insertAdjacentHTML('beforeend', `<style>
   html.hf-hand, html.hf-hand * { cursor: none !important; }
+  /* On a phone, pressing and holding brings up your hand instead of selecting text or a link menu. */
+  html.hf-pressing, html.hf-pressing * {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
   #hf-layer {
     position: fixed;
     inset: 0;
@@ -233,10 +243,12 @@
     document.documentElement.classList.toggle('hf-hand', on && hasHand);
     toggleEl.setAttribute('aria-pressed', on);
     toggleEl.querySelector('span').textContent = on ? 'Hide hands' : 'Show hands';
+    updateHere();
     samples.length = 0;
     wavingUntil = circleUntil = 0;
     me.waving = false;
     me.circle = null;
+    me.around = null;
   }
   toggleEl.addEventListener('click', () => setShown(!shown));
 
@@ -250,8 +262,66 @@
   }
   placeCamera();
 
+  // --- Sharing positions across layouts ---
+  // A phone wraps the text very differently from a wide window, so a position in pixels would land
+  // on different words. Along with it, everyone sends where they are relative to the text: how far
+  // across the text column, and how far down a block (paragraph, heading, image...). Every page
+  // has the same blocks in the same order, so each browser can put that back in its own layout.
+  const content = document.getElementById('page-content') || document.body;
+  const BLOCKS = 'h1,h2,h3,h4,h5,h6,p,li,pre,blockquote,figure,table,img,video,canvas,hr,dt,dd';
+  const MIN_BLOCK = 10;   // px; thinner blocks (rules, empty paragraphs) are too thin to measure from
+  const REMEASURE_MS = 1000; // images load and fonts swap, so measure again every so often
+  let blocks = null;      // [{ top, height }] in page coordinates, in document order
+  let column = null;      // the text column: { left, width } in page coordinates
+  let measuredAt = 0;
+  function measure(now) {
+    if (blocks && now - measuredAt < REMEASURE_MS) return;
+    const c = content.getBoundingClientRect();
+    column = { left: c.left + scrollX, width: c.width || 1 };
+    blocks = [...content.querySelectorAll(BLOCKS)].map((el) => {
+      const r = el.getBoundingClientRect();
+      return { top: r.top + scrollY, height: r.height };
+    });
+    measuredAt = now;
+  }
+  window.addEventListener('resize', () => { blocks = null; });
+  const half = () => document.documentElement.clientWidth / 2;
+  const round3 = v => Math.round(v * 1000) / 1000;
+
+  // Where a point (in this page's coordinates) is relative to the text: the smallest block it's
+  // in, or the nearest one.
+  function toAnchor(x, y) {
+    if (x < -1e8) return null;
+    measure(performance.now());
+    let best = -1, bestSize = Infinity, near = -1, nearDist = Infinity;
+    blocks.forEach((b, i) => {
+      if (b.height < MIN_BLOCK) return;
+      if (y >= b.top && y <= b.top + b.height) {
+        if (b.height < bestSize) { best = i; bestSize = b.height; }
+      } else {
+        const d = Math.min(Math.abs(y - b.top), Math.abs(y - b.top - b.height));
+        if (d < nearDist) { near = i; nearDist = d; }
+      }
+    });
+    const i = best >= 0 ? best : near;
+    if (i < 0) return null;
+    const b = blocks[i];
+    return { i, fx: round3((x + half() - column.left) / column.width), fy: round3((y - b.top) / b.height) };
+  }
+
+  // The point an anchor stands for in this page's layout, or (x, y) as sent if it can't be placed.
+  function fromAnchor(a, x, y) {
+    if (!a || x < -1e8) return { x, y };
+    measure(performance.now());
+    const b = blocks[a.i];
+    if (!b || b.height < 1) return { x, y };
+    return { x: column.left + a.fx * column.width - half(), y: b.top + a.fy * b.height };
+  }
+
   // Only a mouse (or pen) gets a hand; on touch screens you can still see everyone else.
-  const pointer = { x: 0, y: 0, inside: false }; // in window coordinates
+  const pointer = { x: 0, y: 0, inside: false, lift: 0 }; // in window coordinates; lift: see FINGER_LIFT
+  // Phones (no mouse at all) get their hand by pressing and holding.
+  const PHONE = matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   let myId = null;
   let myColor = '#888';
@@ -294,6 +364,16 @@
     return c;
   }
 
+  // Where someone's hand and loop go in this layout.
+  function placeCursor(c) {
+    const m = c.sent;
+    if (!m) return;
+    ({ x: c.tx, y: c.ty } = fromAnchor(m.at, m.x, m.y));
+    if (!m.circle) { c.circle = null; return; }
+    const center = fromAnchor(m.circle_at, m.circle.x, m.circle.y);
+    c.circle = { x: center.x, y: center.y, r: m.circle.r };
+  }
+
   function removeCursor(id) {
     const c = cursors.get(id);
     if (!c) return;
@@ -310,13 +390,14 @@
     hereEl.classList.toggle('hf-on', n > 0);
     if (!n) return;
     const who = n === 1 ? '1 other reader is here' : `${n} other readers are here`;
-    hereEl.textContent = hasHand
-      ? `${who}. Wave your cursor to high five, or circle to hug.`
+    hereEl.textContent = !shown ? `${who}.`
+      : PHONE ? `${who}. Press and hold, then wave to high five or circle to hug.`
+      : hasHand ? `${who}. Wave your cursor to high five, or circle to hug.`
       : `${who}.`;
   }
 
   // --- My own cursor (drawn locally, no network lag) ---
-  const me = { x: OFF, y: OFF, waving: false, circle: null };
+  const me = { x: OFF, y: OFF, waving: false, circle: null, around: null };
   const myEl = makeCursor(myColor);
   myEl.classList.add('hf-off');
   const myLoop = makeLoop(myColor);
@@ -388,12 +469,13 @@
   let lastSent = 0;
   let sentWaving = false;
   let sentCircling = false;
+  let sentWith = null;
   let sent = { x: null, y: null };
 
   function placeMe() {
     if (!pointer.inside || document.hidden || !shown) { me.x = me.y = OFF; return; }
     me.x = pointer.x + cam.x;
-    me.y = pointer.y + cam.y;
+    me.y = pointer.y - pointer.lift + cam.y;
   }
 
   // Samples are in window coordinates, so scrolling the page doesn't look like a gesture.
@@ -407,11 +489,84 @@
     }
     Object.assign(pointer, { x: e.clientX, y: e.clientY, inside: true });
     placeMe();
-    samples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+    // Window coordinates for the shape (so scrolling isn't a gesture), and page coordinates for
+    // comparing with where other hands were.
+    samples.push({ x: e.clientX, y: e.clientY, wx: me.x, wy: me.y, t: performance.now() });
   }, { passive: true });
   window.addEventListener('scroll', () => { placeCamera(); placeMe(); }, { passive: true });
   window.addEventListener('resize', () => { placeCamera(); placeMe(); });
   document.documentElement.addEventListener('mouseleave', () => { pointer.inside = false; placeMe(); });
+
+  // --- Phones: press and hold for your hand ---
+  // Press and hold anywhere and your hand appears just above your finger, and the page stops
+  // scrolling so you can wave or circle like with a mouse. Let go and it's a normal page again.
+  const PRESS_MS = 350;   // how long to hold still before your hand appears
+  const PRESS_SLOP = 10;  // px a finger can wander while pressing; more is a scroll
+  const FINGER_LIFT = 70; // px your hand sits above your finger, so your finger doesn't cover it
+  let press = null;       // { id, x, y, timer } while a finger is down and might become a hold
+  let holding = false;
+
+  function fingerAt(e) {
+    return press && [...e.changedTouches].find(t => t.identifier === press.id);
+  }
+
+  function moveFinger(x, y) {
+    Object.assign(pointer, { x, y, inside: true, lift: FINGER_LIFT });
+    placeMe();
+    samples.push({ x, y, wx: me.x, wy: me.y, t: performance.now() });
+  }
+
+  function endPress() {
+    if (press) clearTimeout(press.timer);
+    press = null;
+    document.documentElement.classList.remove('hf-pressing');
+    if (!holding) return;
+    holding = false;
+    pointer.inside = false;
+    samples.length = 0;
+    placeMe();
+  }
+
+  if (PHONE) {
+    document.addEventListener('touchstart', (e) => {
+      endPress();
+      if (!shown || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      document.documentElement.classList.add('hf-pressing');
+      press = { id: t.identifier, x: t.clientX, y: t.clientY };
+      press.timer = setTimeout(() => {
+        holding = true;
+        if (!hasHand) {
+          hasHand = true;
+          myEl.classList.remove('hf-off');
+        }
+        navigator.vibrate?.(10);
+        moveFinger(press.x, press.y);
+      }, PRESS_MS);
+    }, { passive: true });
+
+    // Not passive: while holding, stop the page from scrolling under your hand.
+    document.addEventListener('touchmove', (e) => {
+      const t = fingerAt(e);
+      if (!t) return;
+      if (holding) {
+        e.preventDefault();
+        moveFinger(t.clientX, t.clientY);
+      } else if (Math.hypot(t.clientX - press.x, t.clientY - press.y) > PRESS_SLOP) {
+        endPress(); // a scroll
+      }
+    }, { passive: false });
+
+    for (const type of ['touchend', 'touchcancel']) {
+      document.addEventListener(type, (e) => {
+        if (!fingerAt(e)) return;
+        if (holding && e.cancelable) e.preventDefault(); // letting go isn't a tap on a link
+        endPress();
+      }, { passive: false });
+    }
+    // Holding brings up your hand, not the link or image menu.
+    document.addEventListener('contextmenu', (e) => { if (press || holding) e.preventDefault(); });
+  }
   document.addEventListener('visibilitychange', placeMe);
 
   // After a high five or hug, ignore gestures until the animation is over, and forget the movement
@@ -427,6 +582,7 @@
     wavingUntil = circleUntil = 0;
     me.waving = false;
     me.circle = null;
+    me.around = null;
     return true;
   }
 
@@ -483,25 +639,115 @@
     return { turn, steady, jumps };
   }
 
-  // Circling: the recent path sweeps most of a full turn around its center, at a steady radius.
+  // Circling: a loop around a spot on the page, or near someone's hand.
   let circleUntil = 0;
-  let lastCircle = null; // in window coordinates
+  let lastCircle = null; // { x, y, r } in window coordinates, and who it's around if anyone
   function tickCircle(now) {
     if (gesturesPaused(now)) return;
     while (samples.length && now - samples[0].t > CIRCLE_WINDOWS.at(-1)) samples.shift();
-    let found = null;
-    for (const ms of CIRCLE_WINDOWS) {
-      found = findCircle(samples.filter(p => now - p.t <= ms));
-      if (found) break;
-    }
+    const found = findAround(now) || findSpot(now);
     if (found) {
       lastCircle = found;
       circleUntil = now + CIRCLE_HOLD_MS;
     }
-    me.circle = now < circleUntil && !isOff(me)
-      ? { x: Math.round(lastCircle.x + cam.x), y: Math.round(lastCircle.y + cam.y), r: lastCircle.r }
-      : null;
-    if (me.circle) me.waving = false, wavingUntil = 0;
+    me.circle = null;
+    me.around = null;
+    if (now < circleUntil && !isOff(me)) {
+      me.circle = { x: lastCircle.x + cam.x, y: lastCircle.y + cam.y, r: lastCircle.r };
+      if (lastCircle.around != null && cursors.has(lastCircle.around)) me.around = lastCircle.around;
+    }
+    if (me.circle) {
+      me.circle = { x: Math.round(me.circle.x), y: Math.round(me.circle.y), r: me.circle.r };
+      me.waving = false, wavingUntil = 0;
+    }
+  }
+
+  // A loop around a spot on the page.
+  function findSpot(now) {
+    for (const ms of CIRCLE_WINDOWS) {
+      const found = findCircle(samples.filter(p => now - p.t <= ms));
+      if (found) return found;
+    }
+    return null;
+  }
+
+  // Looping near someone's hand. People circle a hand where they see it, and it keeps moving (they're
+  // circling too), so the loop drifts and squashes into an oval and isn't round. What stays true is
+  // that the direction you're moving keeps turning the same way, a full turn or more; waves turn
+  // back sharply and wandering doesn't keep turning.
+  const AROUND_REACH = 300; // px: how far your loop can be from their hand
+  function findAround(now) {
+    for (const [id, c] of cursors) {
+      if (isOff(c) || !c.hist?.length || Math.hypot(c.x - me.x, c.y - me.y) > AROUND_REACH) continue;
+      for (const ms of CIRCLE_WINDOWS) {
+        const pts = samples.filter(p => now - p.t <= ms);
+        const loop = findLoop(pts);
+        if (!loop) continue;
+        // Near their hand the whole time, not just passing by.
+        const far = pts.filter((p) => {
+          const o = shownAt(c, p.t);
+          return Math.hypot(p.wx - o.x, p.wy - o.y) > AROUND_REACH;
+        }).length;
+        if (far <= pts.length * 0.1) return { ...loop, around: id };
+      }
+    }
+    return null;
+  }
+
+  function findLoop(pts) {
+    if (pts.length < 10) return null;
+    let cx = 0, cy = 0;
+    for (const p of pts) { cx += p.x; cy += p.y; }
+    cx /= pts.length;
+    cy /= pts.length;
+    const r = pts.reduce((sum, p) => sum + Math.hypot(p.x - cx, p.y - cy), 0) / pts.length;
+    if (r < CIRCLE_R[0] || r > CIRCLE_R[1]) return null;
+    // How the direction of movement turns, step by step.
+    let turn = 0, forward = 0, back = 0, sharp = 0, prev = null, last = pts[0];
+    for (const p of pts) {
+      if (Math.hypot(p.x - last.x, p.y - last.y) < SWEEP_STEP) continue;
+      const a = Math.atan2(p.y - last.y, p.x - last.x);
+      last = p;
+      if (prev === null) { prev = a; continue; }
+      let d = a - prev;
+      if (d > Math.PI) d -= 2 * Math.PI;
+      if (d < -Math.PI) d += 2 * Math.PI;
+      turn += d;
+      if (d > 0) forward += d; else back -= d;
+      if (Math.abs(d) > 1.2) sharp++;
+      prev = a;
+    }
+    if (Math.abs(turn) < CIRCLE_TURN * 2 * Math.PI) return null;
+    if (Math.max(forward, back) / ((forward + back) || 1) < CIRCLE_STEADY) return null;
+    if (sharp > 0) return null;
+    return { x: cx, y: cy, r: Math.round(r) };
+  }
+
+  // Where someone's hand was shown at time t.
+  function shownAt(c, t) {
+    let i = c.hist.length - 1;
+    while (i > 0 && c.hist[i].t > t) i--;
+    return c.hist[i];
+  }
+
+  // Who I'm waving or circling with, as this page shows us. Someone else's screen may lay the page
+  // out differently, so the server takes this as being close enough.
+  function partner() {
+    if (me.around != null) return me.around;
+    let best = null, bestDist = Infinity;
+    for (const [id, c] of cursors) {
+      if (isOff(c)) continue;
+      let dist = Infinity;
+      if (me.circle && c.circle) {
+        dist = Math.hypot(c.circle.x - me.circle.x, c.circle.y - me.circle.y);
+        if (dist >= HUG_DISTANCE) dist = Infinity;
+      } else if (me.waving && c.sent?.waving) {
+        dist = Math.hypot(c.x - me.x, c.y - me.y);
+        if (dist >= FIVE_DISTANCE) dist = Infinity;
+      }
+      if (dist < bestDist) { best = id; bestDist = dist; }
+    }
+    return best;
   }
 
   function findCircle(pts) {
@@ -550,12 +796,11 @@
         case 'cursor': {
           if (msg.id === myId) break;
           const c = getCursor(msg.id, msg.color);
-          c.tx = msg.x;
-          c.ty = msg.y;
-          if (c.fresh || isOff(c) !== isOff({ x: msg.x })) { c.x = msg.x; c.y = msg.y; c.fresh = false; }
+          c.sent = msg;
+          placeCursor(c);
+          if (c.fresh || isOff(c) !== isOff({ x: c.tx })) { c.x = c.tx; c.y = c.ty; c.fresh = false; }
           c.el.classList.toggle('hf-waving', msg.waving);
           c.el.classList.toggle('hf-off', isOff(c));
-          c.circle = msg.circle;
           break;
         }
         case 'bye':
@@ -580,10 +825,15 @@
 
   function send(now) {
     if (!ws || ws.readyState !== WebSocket.OPEN || myId === null) return;
-    const changed = me.waving !== sentWaving || !!me.circle !== sentCircling;
+    const withId = partner();
+    const changed = me.waving !== sentWaving || !!me.circle !== sentCircling || withId !== sentWith;
     if (!changed && now - lastSent < SEND_EVERY_MS) return;
     if (!changed && me.x === sent.x && me.y === sent.y) return;
-    ws.send(JSON.stringify({ t: 'move', x: me.x, y: me.y, waving: me.waving, circle: me.circle }));
+    ws.send(JSON.stringify({
+      t: 'move', x: round3(me.x), y: round3(me.y), waving: me.waving, circle: me.circle,
+      at: toAnchor(me.x, me.y), circle_at: me.circle && toAnchor(me.circle.x, me.circle.y), with: withId,
+    }));
+    sentWith = withId;
     lastSent = now;
     sentWaving = me.waving;
     sentCircling = !!me.circle;
@@ -624,12 +874,14 @@
 
   // Both hands wind up, swing in and slap palm to palm at the midpoint, then bounce apart.
   // As they wind up, the hands turn side-on so the palms face each other.
-  function highFive({ a, b, x, y }) {
+  function highFive({ a, b }) {
     const mine = a === myId || b === myId;
     if (mine) pauseGestures(FIVE_MS + 300);
     let [left, right] = [participant(a), participant(b)];
     if (!left || !right) return;
     if (left.x > right.x) [left, right] = [right, left];
+    // Between the two hands as this page shows them.
+    const [x, y] = [(left.x + right.x) / 2, (left.y + right.y) / 2];
 
     const scene = document.createElement('div');
     scene.style.transform = `translate(${x}px, ${y}px)`;
@@ -785,11 +1037,15 @@
 
   // The hands come together, turn side-on, rest their heads on each other's shoulders and put
   // their little arms (the thumbs) around each other: one over the shoulder, one around the waist.
-  function hug({ a, b, x, y }) {
+  function hug({ a, b }) {
     const mine = a === myId || b === myId;
+    // Between the two loops as this page shows them, or the two hands if a loop has already ended.
+    const loops = [a, b].map(id => id === myId ? me.circle : cursors.get(id)?.circle);
     if (mine) pauseGestures(HUG_MS + 300);
     let [left, right] = [participant(a), participant(b)];
     if (!left || !right) return;
+    const [ca, cb] = loops[0] && loops[1] ? loops : [left, right];
+    const [x, y] = [(ca.x + cb.x) / 2, (ca.y + cb.y) / 2];
     if (left.x > right.x) [left, right] = [right, left];
 
     const scene = document.createElement('div');
@@ -980,8 +1236,13 @@
     placeLoop(myLoop, me.circle, myEl.classList.contains('hf-in-scene'));
 
     for (const c of cursors.values()) {
+      placeCursor(c);
       c.x += (c.tx - c.x) * 0.35;
       c.y += (c.ty - c.y) * 0.35;
+      // Where their hand has been shown lately, to tell when someone circles around it.
+      c.hist ??= [];
+      c.hist.push({ t: now, x: c.x, y: c.y });
+      while (c.hist.length > 2 && now - c.hist[0].t > CIRCLE_WINDOWS.at(-1) + 200) c.hist.shift();
       c.el.style.transform = `translate(${c.x}px, ${c.y}px)`;
       placeLoop(c.loop, c.circle, c.el.classList.contains('hf-in-scene'));
       placeMarker(c);

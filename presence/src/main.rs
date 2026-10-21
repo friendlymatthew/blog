@@ -39,7 +39,7 @@ const HUG_COOLDOWN: Duration = Duration::from_millis(2500);
 const MAX_CONNECTIONS: usize = 1000;
 const MAX_PER_ROOM: usize = 100;
 const MAX_ROOM_LEN: usize = 200;
-const MAX_MESSAGE_LEN: usize = 300;
+const MAX_MESSAGE_LEN: usize = 600;
 /// Positions further than this from the page's origin are ignored.
 const MAX_COORD: f64 = 1e6;
 
@@ -55,11 +55,32 @@ struct Circle {
     r: f64,
 }
 
+/// Where a point is relative to the page's text: how far across the text column, and how far down
+/// the `i`th block (paragraph, heading, image...). Phones and computers wrap text differently, so
+/// browsers use this to put a hand over the same words everywhere. Only browsers read it.
+#[derive(Clone, Copy, Serialize, Deserialize)]
+struct Anchor {
+    i: u32,
+    fx: f64,
+    fy: f64,
+}
+
+impl Anchor {
+    fn valid(&self) -> bool {
+        self.fx.is_finite() && self.fy.is_finite() && self.fx.abs() < 1000.0 && self.fy.abs() < 1000.0
+    }
+}
+
 struct User {
     x: f64,
     y: f64,
     waving: bool,
     circle: Option<Circle>,
+    at: Option<Anchor>,
+    circle_at: Option<Anchor>,
+    /// Who this person's browser says they're waving or circling with, as it shows the page.
+    /// Their screen may lay out the page differently, so this counts as being close enough.
+    with: Option<u64>,
     color: &'static str,
     last_five: Option<Instant>,
     last_hug: Option<Instant>,
@@ -101,6 +122,12 @@ enum ClientMsg {
         waving: bool,
         #[serde(default)]
         circle: Option<Circle>,
+        #[serde(default)]
+        at: Option<Anchor>,
+        #[serde(default)]
+        circle_at: Option<Anchor>,
+        #[serde(default)]
+        with: Option<u64>,
     },
 }
 
@@ -109,7 +136,16 @@ enum ClientMsg {
 #[serde(tag = "t", rename_all = "lowercase")]
 enum ServerMsg<'a> {
     Hello { id: u64, color: &'a str },
-    Cursor { id: u64, x: f64, y: f64, waving: bool, circle: Option<Circle>, color: &'a str },
+    Cursor {
+        id: u64,
+        x: f64,
+        y: f64,
+        waving: bool,
+        circle: Option<Circle>,
+        at: Option<Anchor>,
+        circle_at: Option<Anchor>,
+        color: &'a str,
+    },
     Bye { id: u64 },
     Five { a: u64, b: u64, x: f64, y: f64 },
     Hug { a: u64, b: u64, x: f64, y: f64 },
@@ -199,6 +235,8 @@ async fn handle_socket(socket: WebSocket, state: AppState, room: String) {
                 y: u.y,
                 waving: u.waving,
                 circle: u.circle,
+                at: u.at,
+                circle_at: u.circle_at,
                 color: u.color,
             }));
         }
@@ -209,6 +247,9 @@ async fn handle_socket(socket: WebSocket, state: AppState, room: String) {
                 y: -1e9,
                 waving: false,
                 circle: None,
+                at: None,
+                circle_at: None,
+                with: None,
                 color,
                 last_five: None,
                 last_hug: None,
@@ -241,10 +282,8 @@ async fn handle_socket(socket: WebSocket, state: AppState, room: String) {
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(msg)) = stream.next().await {
             let Message::Text(text) = msg else { continue };
-            let Ok(ClientMsg::Move { x, y, waving, circle }) = serde_json::from_str(&text) else {
-                continue;
-            };
-            handle_move(&recv_state, &recv_room, id, x, y, waving, circle);
+            let Ok(msg) = serde_json::from_str(&text) else { continue };
+            handle_move(&recv_state, &recv_room, id, msg);
         }
     });
 
@@ -271,16 +310,13 @@ fn valid(x: f64, y: f64) -> bool {
     x.is_finite() && y.is_finite() && (x.abs() < MAX_COORD && y.abs() < MAX_COORD || x <= -1e8)
 }
 
-fn handle_move(
-    state: &AppState,
-    room: &str,
-    id: u64,
-    x: f64,
-    y: f64,
-    waving: bool,
-    circle: Option<Circle>,
-) {
-    if !valid(x, y) || circle.is_some_and(|c| !valid(c.x, c.y) || !(0.0..1000.0).contains(&c.r)) {
+fn handle_move(state: &AppState, room: &str, id: u64, msg: ClientMsg) {
+    let ClientMsg::Move { x, y, waving, circle, at, circle_at, with } = msg;
+    if !valid(x, y)
+        || circle.is_some_and(|c| !valid(c.x, c.y) || !(0.0..1000.0).contains(&c.r))
+        || at.is_some_and(|a| !a.valid())
+        || circle_at.is_some_and(|a| !a.valid())
+    {
         return;
     }
     let now = Instant::now();
@@ -291,12 +327,22 @@ fn handle_move(
     me.y = y;
     me.waving = waving;
     me.circle = circle;
+    me.at = at;
+    me.circle_at = circle_at;
+    me.with = with;
     let color = me.color;
-    let _ = room.tx.send(encode(&ServerMsg::Cursor { id, x, y, waving, circle, color }));
+    let _ = room
+        .tx
+        .send(encode(&ServerMsg::Cursor { id, x, y, waving, circle, at, circle_at, color }));
 
     // The server decides when two people meet, so everyone sees the same moment.
     try_five(room, id, now);
     try_hug(room, id, now);
+}
+
+/// Whether either of two people's browsers says they're together.
+fn together(users: &HashMap<u64, User>, a: u64, b: u64) -> bool {
+    users[&a].with == Some(b) || users[&b].with == Some(a)
 }
 
 /// Two waving hands close together high five.
@@ -310,7 +356,7 @@ fn try_five(room: &mut Room, id: u64, now: Instant) {
         .iter()
         .filter(|&(&uid, u)| uid != id && u.can_five(now))
         .map(|(&uid, u)| (uid, (u.x - x).hypot(u.y - y)))
-        .filter(|&(_, d)| d < FIVE_DISTANCE)
+        .filter(|&(uid, d)| d < FIVE_DISTANCE || together(users, id, uid))
         .min_by(|a, b| a.1.total_cmp(&b.1))
         .map(|(uid, _)| uid);
 
@@ -324,7 +370,7 @@ fn try_five(room: &mut Room, id: u64, now: Instant) {
     }
 }
 
-/// Two people circling around the same spot hug.
+/// Two people circling around the same spot, or around each other, hug.
 fn try_hug(room: &mut Room, id: u64, now: Instant) {
     let users = &mut room.users;
     let Some(mine) = users[&id].hug_circle(now) else { return };
@@ -333,7 +379,7 @@ fn try_hug(room: &mut Room, id: u64, now: Instant) {
         .filter(|&(&uid, _)| uid != id)
         .filter_map(|(&uid, u)| u.hug_circle(now).map(|c| (uid, c)))
         .map(|(uid, c)| (uid, c, (c.x - mine.x).hypot(c.y - mine.y)))
-        .filter(|&(_, _, d)| d < HUG_DISTANCE)
+        .filter(|&(uid, _, d)| d < HUG_DISTANCE || together(users, id, uid))
         .min_by(|a, b| a.2.total_cmp(&b.2));
 
     if let Some((other, theirs, _)) = partner {
