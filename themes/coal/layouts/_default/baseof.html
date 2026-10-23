@@ -220,9 +220,9 @@
     });
   });
   </script>
-  {{ with .Site.Params.presence }}
+  {{ if .Site.Params.show_hands }}{{ with .Site.Params.presence }}
   <script defer src="{{ "js/presence.js" | relURL }}" data-server="{{ . }}"></script>
-  {{ end }}
+  {{ end }}{{ end }}
   <script data-goatcounter="https://friendlymatthew.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

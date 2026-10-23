@@ -16,6 +16,8 @@ author = "friendlymatthew"
 featured_image = "/images/me.jpg"
 github = "friendlymatthew"
 show_audio_player = false
+# Readers on the same page see each other's hands (themes/coal/static/js/presence.js). Off for now.
+show_hands = false
 # WebSocket address of the presence server (presence/), which lets readers on the same page see each
 # other's hands. Empty turns it off. Locally: HUGO_PARAMS_PRESENCE=ws://localhost:3001/ws hugo server
 presence = "wss://my-actual-blog-server.onrender.com/ws"
