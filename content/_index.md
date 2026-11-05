@@ -14,7 +14,7 @@ Hi, I'm Matthew and this is my corner of the internet where I hope to share inte
 
 Right now I'm most energized by taking algorithms that are serial by nature and restructuring them so the work can be split across SIMD lanes or GPU threads. My other interests mainly reside in Rust, file formats, and databases. 
 
-I currently live in New York City and will attend the Recurse Center, sheltering away from the horrible AI slop storm. 
+I currently live in New York City and attend the Recurse Center.
 
 Previously, I worked at Pydantic as a database engineer. 
 

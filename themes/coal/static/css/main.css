@@ -162,6 +162,16 @@ nav a {
   color: #0000EE;
 }
 
+.site-links .rss-link {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* With music on, the play button sits just right of rss instead of splitting the free space. */
+.site-links .rss-link ~ .audio-player-toggle {
+  margin-left: 1rem;
+}
+
 nav a:visited {
   color: #551A8B;
 }
